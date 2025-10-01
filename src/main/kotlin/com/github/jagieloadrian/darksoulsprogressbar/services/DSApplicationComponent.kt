@@ -8,7 +8,6 @@ import com.intellij.ide.ui.LafManagerListener
 import com.intellij.openapi.application.ApplicationActivationListener
 import com.intellij.openapi.wm.IdeFrame
 import javax.swing.UIManager
-import kotlin.reflect.jvm.jvmName
 
 class DSApplicationComponent : LafManagerListener, ApplicationActivationListener, DynamicPluginListener {
 

@@ -2,7 +2,6 @@ package com.github.jagieloadrian.darksoulsprogressbar.ui
 
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Icons
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.IconLoader
 import com.intellij.util.ui.JBUI
 import java.awt.Graphics
