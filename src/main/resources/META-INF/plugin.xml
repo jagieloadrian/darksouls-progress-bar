@@ -5,15 +5,17 @@
     <vendor>jagieloadrian</vendor>
 
     <depends>com.intellij.modules.platform</depends>
-    <extensions defaultExtensionNs="com.intellij"/>
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="com.github.jagieloadrian.darksoulsprogressbar.service.DSSpinnerStartupActivity"/>
+        <postStartupActivity implementation="com.github.jagieloadrian.darksoulsprogressbar.service.TestFailureStartActivity"/>
+    </extensions>
 
     <applicationListeners>
-        <listener class="com.github.jagieloadrian.darksoulsprogressbar.services.DSApplicationComponent"
+        <listener class="com.github.jagieloadrian.darksoulsprogressbar.listeners.DSProgressBarComponent"
                   topic="com.intellij.ide.ui.LafManagerListener"/>
-        <listener class="com.github.jagieloadrian.darksoulsprogressbar.services.DSApplicationComponent"
+        <listener class="com.github.jagieloadrian.darksoulsprogressbar.listeners.DSProgressBarComponent"
                   topic="com.intellij.openapi.application.ApplicationActivationListener"/>
-
-        <listener class="com.github.jagieloadrian.darksoulsprogressbar.services.DSApplicationComponent"
-                  topic="com.intellij.ide.plugins.DynamicPluginListener"/>
+<!--        <listener class="com.github.jagieloadrian.darksoulsprogressbar.listeners.DSTestListenerComponent"-->
+<!--                  topic="com.intellij.execution.testframework.sm.runner.SMTRunnerEventsListener"/>-->
     </applicationListeners>
 </idea-plugin>
