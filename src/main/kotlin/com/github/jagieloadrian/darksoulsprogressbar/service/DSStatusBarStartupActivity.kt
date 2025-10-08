@@ -1,7 +1,7 @@
 package com.github.jagieloadrian.darksoulsprogressbar.service
 
 import com.github.jagieloadrian.darksoulsprogressbar.ui.FireSpinner
-import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.CUSTOM_WIDGET_NAME
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.CUSTOM_WIDGET_NAME
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
@@ -14,7 +14,7 @@ import java.awt.event.MouseEvent
 import java.net.URI
 import javax.swing.ImageIcon
 
-class DSSpinnerStartupActivity : ProjectActivity {
+class DSStatusBarStartupActivity : ProjectActivity {
     override suspend fun execute(project: Project) {
         ApplicationManager.getApplication().invokeLater {
             val statusBar = WindowManager.getInstance().getStatusBar(project)

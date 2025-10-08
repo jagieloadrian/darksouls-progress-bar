@@ -1,5 +1,2 @@
-1. dokończyć popup z you_died
- 1.1 dokończyć obrazek
- 1.2 dodać efekt dźwiękowy
 2. dodać konfigurację
 3. dodać testy

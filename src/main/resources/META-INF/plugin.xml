@@ -6,7 +6,7 @@
 
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="com.github.jagieloadrian.darksoulsprogressbar.service.DSSpinnerStartupActivity"/>
+        <postStartupActivity implementation="com.github.jagieloadrian.darksoulsprogressbar.service.DSStatusBarStartupActivity"/>
         <postStartupActivity implementation="com.github.jagieloadrian.darksoulsprogressbar.service.TestFailureStartActivity"/>
     </extensions>
 
@@ -15,7 +15,5 @@
                   topic="com.intellij.ide.ui.LafManagerListener"/>
         <listener class="com.github.jagieloadrian.darksoulsprogressbar.listeners.DSProgressBarComponent"
                   topic="com.intellij.openapi.application.ApplicationActivationListener"/>
-<!--        <listener class="com.github.jagieloadrian.darksoulsprogressbar.listeners.DSTestListenerComponent"-->
-<!--                  topic="com.intellij.execution.testframework.sm.runner.SMTRunnerEventsListener"/>-->
     </applicationListeners>
 </idea-plugin>

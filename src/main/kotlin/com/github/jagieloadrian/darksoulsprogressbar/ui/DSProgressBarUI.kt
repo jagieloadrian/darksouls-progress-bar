@@ -13,12 +13,17 @@ class DSProgressBarUI : BasicProgressBarUI() {
     private val background: ImageIcon = ImageIcon(javaClass.getResource("/gif/toxic_cloud.gif"))
     private val chosenGif: ImageIcon = ImageIcon(javaClass.getResource(Icons.icons.random()))
     private var gifXPosition = 0f
-    private val gifSpeed = 5f
+    private val gifSpeed = 2f
+    private var shouldBackward = false
 
     init {
         // Set up a timer to update the GIF position and trigger repaint
-        val timer = Timer(16) { // ~60 FPS
-            gifXPosition += gifSpeed
+        val timer = Timer(32) { // ~30 FPS
+            if(shouldBackward) {
+                gifXPosition -= gifSpeed
+            } else {
+                gifXPosition += gifSpeed
+            }
         }
         timer.start()
     }
@@ -29,11 +34,17 @@ class DSProgressBarUI : BasicProgressBarUI() {
 
     override fun paintIndeterminate(g2d: Graphics?, c: JComponent?) {
         if (c != null) {
-            val gifWidth = chosenGif.iconWidth
-            if (gifXPosition > c.width) {
-                gifXPosition = -gifWidth.toFloat()
-            }
+            changeShouldBackward(gifXPosition.toInt(), c.width, chosenGif.iconWidth)
             paintProgressBarWithGif(g2d, c, background, chosenGif, gifXPosition.toInt())
+        }
+    }
+
+    private fun changeShouldBackward(xPosition: Int, componentWidth: Int, iconWidth: Int) {
+        if (xPosition > componentWidth) {
+           shouldBackward = true
+        }
+        if (xPosition + iconWidth < 0) {
+            shouldBackward = false
         }
     }
 
