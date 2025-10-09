@@ -6,11 +6,14 @@
 
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="com.github.jagieloadrian.darksoulsprogressbar.service.DSStatusBarStartupActivity"/>
-        <postStartupActivity implementation="com.github.jagieloadrian.darksoulsprogressbar.service.TestFailureStartActivity"/>
+        <statusBarWidgetFactory
+                implementation="com.github.jagieloadrian.darksoulsprogressbar.service.DSSpinnerStatusBarFactory"
+                id="com.github.jagieloadrian.darksoulsprogressbar.service.DSSpinnerStatusBarFactory"/>
+        <postStartupActivity
+                implementation="com.github.jagieloadrian.darksoulsprogressbar.service.TestFailureStartActivity"/>
         <projectConfigurable instance="com.github.jagieloadrian.darksoulsprogressbar.settings.DSPluginConfigurable"
                              displayName="DarkSouls progress bar"
-                            id="com.github.jagieloadrian.darksoulsprogressbar.settings.DSPluginConfigurable"/>
+                             id="com.github.jagieloadrian.darksoulsprogressbar.settings.DSPluginConfigurable"/>
     </extensions>
 
     <applicationListeners>

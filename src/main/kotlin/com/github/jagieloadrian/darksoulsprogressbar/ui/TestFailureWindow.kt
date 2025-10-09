@@ -4,7 +4,6 @@ import com.github.jagieloadrian.darksoulsprogressbar.settings.DSPersistentState
 import com.github.jagieloadrian.darksoulsprogressbar.settings.DSSettingsListener
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Items
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.DefaultLogger
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.JBPopupListener
@@ -25,7 +24,6 @@ object TestFailureWindow {
     private var shouldShow = DSPersistentState.getInstance().animateOnFailedBuild
     private var popup: JBPopup? = null
     private var clip: Clip? = null
-    private val logger = DefaultLogger.getInstance(this::class.java)
 
     init {
         ApplicationManager.getApplication()
@@ -41,12 +39,9 @@ object TestFailureWindow {
     }
 
     fun show() {
-        logger.info("ShouldShow: $shouldShow")
         if (!shouldShow) {
-
             return
         }
-        logger.info("Wszedłem do TestFailureOverlay i popup jest: $popup")
         if (popup != null) return
 
         val gifUrl = javaClass.getResource(Items.YOU_DIED_GIF)

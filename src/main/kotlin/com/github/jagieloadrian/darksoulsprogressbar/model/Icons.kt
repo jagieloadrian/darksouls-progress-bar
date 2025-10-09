@@ -3,7 +3,7 @@ package com.github.jagieloadrian.darksoulsprogressbar.model
 enum class Icons(val iconName: String, val path: String) {
     BONFIRE("Bonfire", "/gif/bonfire_darksouls.gif"),
     CROW("Crow", "/gif/crow.gif"),
-    DARK_SOULD_BONFIRE("Bonfire from DS1", "/gif/dark_souls_bonfire.gif"),
+    DARK_SOUL_BONFIRE("Bonfire from DS1", "/gif/dark_souls_bonfire.gif"),
     ESTUS("Lying knight", "/gif/estus.gif"),
     FIRE_DS3("Bonfire from DS3", "/gif/fire_ds3.gif"),
     GREAT_JAR("Great Jar", "/gif/great_jar.gif"),

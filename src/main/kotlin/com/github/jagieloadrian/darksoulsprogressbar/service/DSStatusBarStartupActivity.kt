@@ -1,43 +1,55 @@
 package com.github.jagieloadrian.darksoulsprogressbar.service
 
-import com.github.jagieloadrian.darksoulsprogressbar.ui.FireSpinner
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.CUSTOM_WIDGET_NAME
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.ProjectActivity
+import com.intellij.openapi.util.NlsContexts
 import com.intellij.openapi.wm.StatusBarWidget
-import com.intellij.openapi.wm.WindowManager
+import com.intellij.openapi.wm.StatusBarWidgetFactory
 import com.intellij.util.Consumer
+import kotlinx.coroutines.CoroutineScope
 import org.jetbrains.annotations.NonNls
 import java.awt.Desktop
 import java.awt.event.MouseEvent
 import java.net.URI
 import javax.swing.ImageIcon
 
-class DSStatusBarStartupActivity : ProjectActivity {
-    override suspend fun execute(project: Project) {
-        ApplicationManager.getApplication().invokeLater {
-            val statusBar = WindowManager.getInstance().getStatusBar(project)
-            statusBar?.let {
-                val widget = FireSpinnerWidget()
-                it.addWidget(widget)
-            }
-        }
+class DSSpinnerStatusBarFactory: StatusBarWidgetFactory {
+    override fun getId(): @NonNls String = CUSTOM_WIDGET_NAME
+    override fun getDisplayName(): @NlsContexts.ConfigurableName String = CUSTOM_WIDGET_NAME
+
+    override fun createWidget(
+        project: Project,
+        scope: CoroutineScope,
+    ): StatusBarWidget {
+       return FireSpinnerWidget()
     }
+
+    override fun disposeWidget(widget: StatusBarWidget) {
+        super.disposeWidget(widget)
+        widget.dispose()
+    }
+
+    override fun isEnabledByDefault(): Boolean = true
+
+    override fun isAvailable(project: Project): Boolean = true
 }
 
-class FireSpinnerWidget : StatusBarWidget {
+class FireSpinnerWidget : StatusBarWidget, StatusBarWidget.Multiframe {
     private val spinner = FireSpinner()
     override fun ID(): @NonNls String {
         return CUSTOM_WIDGET_NAME
     }
 
     override fun getPresentation(): StatusBarWidget.WidgetPresentation {
-        return CustomSpinnerPresentation(spinner)
+        return FireSpinnerPresentation(spinner)
+    }
+
+    override fun copy(): StatusBarWidget {
+        return FireSpinnerWidget()
     }
 }
 
-class CustomSpinnerPresentation(private val spinner: FireSpinner) : StatusBarWidget.IconPresentation {
+class FireSpinnerPresentation(private val spinner: FireSpinner) : StatusBarWidget.IconPresentation {
     override fun getTooltipText(): String = CUSTOM_WIDGET_NAME
     override fun getClickConsumer(): Consumer<MouseEvent> {
         return Consumer {
@@ -53,5 +65,13 @@ class CustomSpinnerPresentation(private val spinner: FireSpinner) : StatusBarWid
     }
     override fun getIcon(): ImageIcon {
        return spinner.getIcon()
+    }
+}
+
+class FireSpinner {
+    private val fireSpinner: ImageIcon = ImageIcon(javaClass.getResource("/gif/bonfire_darksouls_small.gif"))
+
+    fun getIcon(): ImageIcon {
+        return fireSpinner
     }
 }
