@@ -8,6 +8,9 @@
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="com.github.jagieloadrian.darksoulsprogressbar.service.DSStatusBarStartupActivity"/>
         <postStartupActivity implementation="com.github.jagieloadrian.darksoulsprogressbar.service.TestFailureStartActivity"/>
+        <projectConfigurable instance="com.github.jagieloadrian.darksoulsprogressbar.settings.DSPluginConfigurable"
+                             displayName="DarkSouls progress bar"
+                            id="com.github.jagieloadrian.darksoulsprogressbar.settings.DSPluginConfigurable"/>
     </extensions>
 
     <applicationListeners>

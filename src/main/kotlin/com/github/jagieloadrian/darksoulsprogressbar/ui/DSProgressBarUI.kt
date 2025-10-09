@@ -1,6 +1,8 @@
 package com.github.jagieloadrian.darksoulsprogressbar.ui
 
-import com.github.jagieloadrian.darksoulsprogressbar.utils.Icons
+import com.github.jagieloadrian.darksoulsprogressbar.settings.DSPersistentState
+import com.github.jagieloadrian.darksoulsprogressbar.settings.DSSettingsListener
+import com.intellij.openapi.application.ApplicationManager
 import java.awt.Graphics
 import java.awt.Graphics2D
 import javax.swing.ImageIcon
@@ -11,7 +13,8 @@ import javax.swing.plaf.basic.BasicProgressBarUI
 class DSProgressBarUI : BasicProgressBarUI() {
 
     private val background: ImageIcon = ImageIcon(javaClass.getResource("/gif/toxic_cloud.gif"))
-    private val chosenGif: ImageIcon = ImageIcon(javaClass.getResource(Icons.icons.random()))
+    private var iconsToUse = DSPersistentState.getInstance().iconPaths
+    private val chosenGif: ImageIcon = ImageIcon(javaClass.getResource(iconsToUse.random()))
     private var gifXPosition = 0f
     private val gifSpeed = 2f
     private var shouldBackward = false
@@ -26,6 +29,17 @@ class DSProgressBarUI : BasicProgressBarUI() {
             }
         }
         timer.start()
+
+        ApplicationManager.getApplication()
+            .messageBus
+            .connect()
+            .subscribe(
+                DSSettingsListener.TOPIC,
+                object : DSSettingsListener {
+                    override fun settingsChanged(newState: DSPersistentState) {
+                        iconsToUse = newState.iconPaths
+                    }
+                })
     }
 
     override fun getBoxLength(availableLength: Int, otherDimension: Int): Int {
