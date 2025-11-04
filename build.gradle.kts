@@ -62,7 +62,10 @@ dependencies {
     testImplementation(libs.junit.platform.suite.engine)
     testImplementation(libs.mocking.mockk)
     testImplementation(libs.opentest4j)
+    testImplementation(libs.kotest.assertion)
+    testImplementation(libs.junit.jupiter)
 
+    uiTestImplementation(libs.kotest.assertion)
     uiTestImplementation(libs.kodein)
     uiTestImplementation(libs.coroutines)
     uiTestImplementation(libs.junit.jupiter.core)
@@ -72,7 +75,6 @@ dependencies {
     intellijPlatform {
         val platformVersion = providers.gradleProperty("platformVersion")
         val platformType = providers.gradleProperty("platformType")
-        val uiPlatformVersionToTest = providers.gradleProperty("uiPlatformBuildVersion")
         create(platformType, platformVersion) {
             useInstaller = false
         }
@@ -86,17 +88,14 @@ dependencies {
         // Module Dependencies. Uses `platformBundledModules` property from the gradle.properties file for bundled IntelliJ Platform modules.
         bundledModules(providers.gradleProperty("platformBundledModules").map { it.split(',') })
 
-        testFramework(TestFrameworkType.Starter, version = "252.26830.84")
-//        testFramework(TestFrameworkType.Platform, version = "252.26830.84")
+        testFramework(TestFrameworkType.Starter)
         // UI Test framework dependencies
         testFramework(
             TestFrameworkType.Starter,
-            version = uiPlatformVersionToTest,
             configurationName = "uiTestImplementation"
         )
         testFramework(
             TestFrameworkType.JUnit5,
-            version = uiPlatformVersionToTest,
             configurationName = "uiTestImplementation"
         )
     }
