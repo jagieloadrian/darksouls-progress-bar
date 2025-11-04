@@ -4,6 +4,7 @@ import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.CUSTOM_WIDGET_N
 import com.intellij.driver.sdk.ui.components.ideFrame
 import com.intellij.driver.sdk.ui.xQuery
 import com.intellij.driver.sdk.wait
+import com.intellij.driver.sdk.waitFor
 import com.intellij.ide.starter.driver.engine.BackgroundRun
 import com.intellij.ide.starter.driver.engine.runIdeWithDriver
 import com.intellij.ide.starter.ide.IdeProductProvider
@@ -12,17 +13,26 @@ import com.intellij.ide.starter.plugins.PluginConfigurator
 import com.intellij.ide.starter.project.LocalProjectInfo
 import com.intellij.ide.starter.runner.Starter
 import com.intellij.util.applyIf
+import io.kotest.assertions.any
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
+import java.awt.event.KeyEvent.VK_CONTROL
 import java.nio.file.Paths
+import javax.swing.JProgressBar
 import kotlin.io.path.Path
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @Tag("ui")
+@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class DSProgressBarTest {
     companion object {
         private lateinit var run: BackgroundRun
@@ -55,10 +65,25 @@ class DSProgressBarTest {
     }
 
     @Test
+    @Order(1)
+    fun `check if the progress bar exist`() {
+        run.driver.withContext {
+            ideFrame {
+                val progressBars = x(xQuery { byAccessibleName("DSProgressBarUI") })
+
+                progressBars.isVisible() shouldBe true
+                progressBars.isEnabled() shouldBe true
+                progressBars.component.getClass().toString() shouldContain JProgressBar::class.java.toString()
+                progressBars.component.isShowing() shouldBe true
+            }
+        }
+    }
+
+    @Test
+    @Order(2)
     fun `check if the status bar has custom widget`() {
         run.driver.withContext {
             ideFrame {
-                wait(1.minutes)
                 val tooltipInStatusBar = x(xQuery { byTooltip(CUSTOM_WIDGET_NAME) })
                 tooltipInStatusBar shouldNotBe null
 
@@ -71,13 +96,38 @@ class DSProgressBarTest {
             }
         }
     }
+    
+    @Test
+    @Order(3)
+    fun `should show screen with failing message`(){
+        run.driver.withContext {
+            ideFrame {
+                wait(10.seconds)
+                keyboard {
+                    doublePressing(VK_CONTROL) {}
+                    enterText("gradle clean build")
+                    enter()
+                }
 
-//    @Test
-//    fun `check if the progress bar exist`() {
-//        run.driver.withContext {
-//            ideFrame {
-//
-//            }
-//        }
-//    }
+//                wait(10.minutes)
+
+                waitFor(timeout = 20.seconds) {
+                    x( xQuery { contains(byVisibleText("This is an unexpected error")) }).present()
+                            ||    x( xQuery { contains(byText("This is an unexpected error")) }).present()
+                }
+                val failureWindow = x(xQuery { byAccessibleName("TestFailureWindow") })
+
+                failureWindow shouldNotBe null
+                failureWindow.isVisible() shouldBe true
+                failureWindow.isEnabled() shouldBe true
+
+                val failureWindowComponent = failureWindow.component
+
+                failureWindowComponent.isShowing() shouldBe true
+                failureWindowComponent.isFocusOwner() shouldBe true
+                failureWindowComponent.getClass().toString() shouldContain JProgressBar::class.java.toString()
+            }
+        }
+
+    }
 }

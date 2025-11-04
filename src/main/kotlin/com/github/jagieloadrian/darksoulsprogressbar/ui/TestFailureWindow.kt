@@ -59,14 +59,18 @@ object TestFailureWindow {
                 }
             })
             add(label)
+            accessibleContext.accessibleName = this.javaClass.simpleName
         }
 
         popup = JBPopupFactory.getInstance()
             .createComponentPopupBuilder(panel, null)
-            .setResizable(false)
-            .setMovable(false)
-            .setRequestFocus(true)
-            .setCancelOnClickOutside(true)
+            .apply {
+                setResizable(false)
+                setMovable(false)
+                setRequestFocus(true)
+                setCancelOnClickOutside(true)
+                setShowBorder(false)
+            }
             .createPopup()
 
         popup?.addListener(object : JBPopupListener {

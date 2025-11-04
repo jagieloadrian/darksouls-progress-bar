@@ -194,6 +194,10 @@ tasks {
         )
     }
 
+    test {
+        useJUnitPlatform()
+    }
+
     register<Test>("uiTest") {
         description = "Runs only the UI tests that start the IDE"
         group = "verification"

@@ -18,6 +18,10 @@ class DSProgressBarUI : BasicProgressBarUI() {
     private var gifXPosition = 0f
     private val gifSpeed = 2f
     private var shouldBackward = false
+    override fun installUI(c: JComponent?) {
+        super.installUI(c)
+        c?.accessibleContext?.accessibleName = this.javaClass.simpleName
+    }
 
     init {
         // Set up a timer to update the GIF position and trigger repaint

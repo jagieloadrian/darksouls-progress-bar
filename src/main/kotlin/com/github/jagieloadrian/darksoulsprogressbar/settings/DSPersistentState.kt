@@ -16,15 +16,16 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 class DSPersistentState : PersistentStateComponent<DSPersistentState> {
 
     var iconPaths: MutableSet<String> = Icons.entries.map { it.path }.toMutableSet()
-    var animateOnFailedBuild:Boolean = true
+    var animateOnFailedBuild: Boolean = true
 
     override fun getState(): DSPersistentState {
-      return this
+        return this
     }
 
     override fun loadState(state: DSPersistentState) {
         XmlSerializerUtil.copyBean(state, this)
     }
+
     companion object {
         fun getInstance(): DSPersistentState {
             return ApplicationManager.getApplication().getService(DSPersistentState::class.java)
