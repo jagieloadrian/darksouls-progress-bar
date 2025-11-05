@@ -15,7 +15,7 @@ import java.nio.file.Paths
 class SimpleContextTest {
 
     @Test
-    fun `simple context test wo prodżekto`() {
+    fun `simple context test without prodżekto`() {
         Starter.newContext(
             "Test Context",
             TestCase(IdeProductProvider.IC, projectInfo = NoProject)
