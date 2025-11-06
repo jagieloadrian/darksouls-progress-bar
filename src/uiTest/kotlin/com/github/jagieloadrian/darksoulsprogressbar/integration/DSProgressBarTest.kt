@@ -1,9 +1,8 @@
 package com.github.jagieloadrian.darksoulsprogressbar.integration
 
-import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.CUSTOM_WIDGET_NAME
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.CUSTOM_WIDGET_NAME
 import com.intellij.driver.sdk.ui.components.ideFrame
 import com.intellij.driver.sdk.ui.xQuery
-import com.intellij.driver.sdk.wait
 import com.intellij.driver.sdk.waitFor
 import com.intellij.driver.sdk.waitForProjectOpen
 import com.intellij.ide.starter.driver.engine.BackgroundRun
@@ -25,10 +24,8 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import java.awt.event.KeyEvent.VK_CONTROL
-import java.io.File
 import java.nio.file.Paths
-import java.time.LocalDateTime
-import javax.imageio.ImageIO
+import javax.swing.JPanel
 import javax.swing.JProgressBar
 import kotlin.io.path.Path
 import kotlin.time.Duration.Companion.minutes
@@ -78,10 +75,6 @@ class DSProgressBarTest {
                 progressBars.isVisible() shouldBe true
                 progressBars.isEnabled() shouldBe true
                 progressBars.component.getClass().toString() shouldContain JProgressBar::class.java.toString()
-                val image = progressBars.getScreenshot()
-                val file = File("build/reports/progressBars.png")
-                ImageIO.write(image, "png", file)
-                println("Saved snapshot to: " + file.absolutePath)
                 progressBars.component.isShowing() shouldBe true
             }
         }
@@ -94,13 +87,7 @@ class DSProgressBarTest {
             ideFrame {
                 val tooltipInStatusBar = x(xQuery { byTooltip(CUSTOM_WIDGET_NAME) })
                 tooltipInStatusBar shouldNotBe null
-                val image = tooltipInStatusBar.getScreenshot()
-                val file = File("build/reports/tooltipInStatusBar.png")
-                ImageIO.write(image, "png", file)
-                println("Saved snapshot to: " + file.absolutePath)
-
                 val getSomeRestComponent = tooltipInStatusBar.component
-
                 getSomeRestComponent.isEnabled() shouldBe true
                 getSomeRestComponent.isShowing() shouldBe true
                 getSomeRestComponent.isDisplayable() shouldBe true
@@ -114,11 +101,6 @@ class DSProgressBarTest {
     fun `should show screen with failing message`() {
         run.driver.withContext {
             ideFrame {
-                wait(10.seconds)
-//                invokeAction("RunAnything")
-//                waitFor(5.seconds) {
-//                    findAll<TextFieldFixture>(byXpath("//div[@class='SearchTextField']")).isNotEmpty()
-//                }
                 keyboard {
                     doublePressing(VK_CONTROL) {}
                     enterText("gradle clean build")
@@ -130,34 +112,17 @@ class DSProgressBarTest {
                             tree.allTextAsString().contains("[clean build]: failed")
                 }
 
-                val scrnshotPath = driver.takeScreenshot("/build/testfailure/screenshot-${LocalDateTime.now().toString()}.png")
-                println("Screenshot path: $scrnshotPath")
+                val failureWindow = x(xQuery { byAccessibleName("TestFailureWindow") })
+                failureWindow shouldNotBe null
+                failureWindow.isVisible() shouldBe true
+                failureWindow.isEnabled() shouldBe true
 
-//                val failureWindow = x(xQuery { byClass("JBPopup") })
-                val failureWindowJlabel = x(xQuery { byClass("JLabel") })
-                val failureWindowJpanel = x(xQuery { byClass("JPanel") })
+                val failureWindowComponent = failureWindow.component
 
-                val image = failureWindowJlabel.getScreenshot()
-                val file = File("build/reports/failureWindowlabel.png")
-                ImageIO.write(image, "png", file)
-                println("Saved snapshot to: " + file.absolutePath)
-
-                val imagePanel = failureWindowJpanel.getScreenshot()
-                val filePanel = File("build/reports/failureWindowPanel.png")
-                ImageIO.write(imagePanel, "png", filePanel)
-                println("Saved snapshot to: " + filePanel.absolutePath)
-//                val failureWindow = x(xQuery { byAccessibleName("TestFailureWindow") })
-//                failureWindow shouldNotBe null
-//                failureWindow.isVisible() shouldBe true
-//                failureWindow.isEnabled() shouldBe true
-//
-//                val failureWindowComponent = failureWindow.component
-//
-//                failureWindowComponent.isShowing() shouldBe true
-//                failureWindowComponent.isFocusOwner() shouldBe true
-//                failureWindowComponent.getClass().toString() shouldContain JProgressBar::class.java.toString()
+                failureWindowComponent.isShowing() shouldBe true
+                failureWindowComponent.isFocusOwner() shouldBe true
+                failureWindowComponent.getClass().toString() shouldContain JPanel::class.java.toString()
             }
         }
-
     }
 }

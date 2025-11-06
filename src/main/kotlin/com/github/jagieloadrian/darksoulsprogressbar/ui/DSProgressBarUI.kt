@@ -2,9 +2,13 @@ package com.github.jagieloadrian.darksoulsprogressbar.ui
 
 import com.github.jagieloadrian.darksoulsprogressbar.settings.DSPersistentState
 import com.github.jagieloadrian.darksoulsprogressbar.settings.DSSettingsListener
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.BACKGROUND_PROGRESS_BAR_GIF
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.ui.scale.JBUIScale
+import java.awt.BasicStroke
 import java.awt.Graphics
 import java.awt.Graphics2D
+import java.awt.geom.RoundRectangle2D
 import javax.swing.ImageIcon
 import javax.swing.JComponent
 import javax.swing.Timer
@@ -12,7 +16,7 @@ import javax.swing.plaf.basic.BasicProgressBarUI
 
 class DSProgressBarUI : BasicProgressBarUI() {
 
-    private val background: ImageIcon = ImageIcon(javaClass.getResource("/gif/toxic_cloud.gif"))
+    private val background: ImageIcon = ImageIcon(javaClass.getResource(BACKGROUND_PROGRESS_BAR_GIF))
     private var iconsToUse = DSPersistentState.getInstance().iconPaths
     private val chosenGif: ImageIcon = ImageIcon(javaClass.getResource(iconsToUse.random()))
     private var gifXPosition = 0f
@@ -22,7 +26,7 @@ class DSProgressBarUI : BasicProgressBarUI() {
     init {
         // Set up a timer to update the GIF position and trigger repaint
         val timer = Timer(32) { // ~30 FPS
-            if(shouldBackward) {
+            if (shouldBackward) {
                 gifXPosition -= gifSpeed
             } else {
                 gifXPosition += gifSpeed
@@ -50,13 +54,13 @@ class DSProgressBarUI : BasicProgressBarUI() {
         if (c != null) {
             c.accessibleContext?.accessibleName = this.javaClass.simpleName
             changeShouldBackward(gifXPosition.toInt(), c.width, chosenGif.iconWidth)
-            paintProgressBarWithGif(g2d, c, background, chosenGif, gifXPosition.toInt())
+            paintProgressBar(g2d, c, background, chosenGif, gifXPosition.toInt())
         }
     }
 
     private fun changeShouldBackward(xPosition: Int, componentWidth: Int, iconWidth: Int) {
         if (xPosition > componentWidth) {
-           shouldBackward = true
+            shouldBackward = true
         }
         if (xPosition + iconWidth < 0) {
             shouldBackward = false
@@ -66,23 +70,39 @@ class DSProgressBarUI : BasicProgressBarUI() {
     override fun paintDeterminate(g2d: Graphics?, c: JComponent?) {
         if (c != null) {
             c.accessibleContext?.accessibleName = this.javaClass.simpleName
-            paintProgressBarWithGif(g2d, c, background, chosenGif)
+            paintProgressBar(g2d, c, background, chosenGif)
         }
     }
 
-    fun paintProgressBarWithGif(
+    fun paintProgressBar(
         g: Graphics?,
         c: JComponent?,
         backgroundIcon: ImageIcon,
         centerIcon: ImageIcon,
-        xPosition: Int? = null
+        xPosition: Int? = null,
     ) {
         if (g == null || c == null) return
         val g2 = g as Graphics2D
 
         val w = c.width
         val h = c.height
+        val rectangle2D = getRoundRectangle(c.width, c.height)
+        paintProgressBarWithGif(g2, rectangle2D, backgroundIcon, w, h, c, centerIcon, xPosition)
+        drawBorder(rectangle2D, g2)
 
+    }
+
+    private fun paintProgressBarWithGif(
+        g2: Graphics2D,
+        rectangle2D: RoundRectangle2D,
+        backgroundIcon: ImageIcon,
+        w: Int,
+        h: Int,
+        c: JComponent,
+        centerIcon: ImageIcon,
+        xPosition: Int?,
+    ) {
+        g2.fill(rectangle2D)
         g2.drawImage(backgroundIcon.image, 0, 0, w, h, c)
 
         val origW = centerIcon.iconWidth
@@ -101,5 +121,28 @@ class DSProgressBarUI : BasicProgressBarUI() {
         val y = (h - targetH) / 2
 
         g2.drawImage(centerIcon.image, x, y, targetW, targetH, c)
+    }
+
+    private fun drawBorder(rectangle2D: RoundRectangle2D, graphics2D: Graphics2D) {
+        val color = graphics2D.color
+        val stroke = graphics2D.stroke
+        graphics2D.color = progressBar.foreground
+        graphics2D.stroke = BasicStroke(2f)
+        graphics2D.draw(rectangle2D)
+        graphics2D.color = color
+        graphics2D.stroke = stroke
+    }
+
+    private fun getRoundRectangle(width: Int, height: Int): RoundRectangle2D {
+        val arcLength = JBUIScale.scale(9f)
+        val offset = JBUIScale.scale(2f)
+        return RoundRectangle2D.Float(
+            JBUIScale.scale(1f),
+            JBUIScale.scale(1f),
+            width - offset,
+            height - offset,
+            arcLength,
+            arcLength,
+        )
     }
 }

@@ -1,6 +1,11 @@
 package com.github.jagieloadrian.darksoulsprogressbar.service
 
-import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.CUSTOM_WIDGET_NAME
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.DS_ONE_SOUNDTRACK
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.DS_THREE_SOUNDTRACK
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.DS_TWO_SOUNDTRACK
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.ELDEN_RING_SOUNDTRACK
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.SMALL_BONFIRE_GIF
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.CUSTOM_WIDGET_NAME
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsContexts
 import com.intellij.openapi.wm.StatusBarWidget
@@ -50,11 +55,14 @@ class FireSpinnerWidget : StatusBarWidget, StatusBarWidget.Multiframe {
 }
 
 class FireSpinnerPresentation(private val spinner: FireSpinner) : StatusBarWidget.IconPresentation {
+    private val soundtracks = listOf(DS_ONE_SOUNDTRACK, DS_TWO_SOUNDTRACK,
+        DS_THREE_SOUNDTRACK, ELDEN_RING_SOUNDTRACK)
+
     override fun getTooltipText(): String = CUSTOM_WIDGET_NAME
     override fun getClickConsumer(): Consumer<MouseEvent> {
         return Consumer {
             try {
-                val url = URI("https://www.youtube.com/watch?v=iZ0Yp79Odl8&list=PLxh_0CD1_70Or5zVrJS7G5jWehpTzFNH6")
+                val url = URI(soundtracks.random())
                 if (Desktop.isDesktopSupported()) {
                     Desktop.getDesktop().browse(url)
                 }
@@ -69,7 +77,7 @@ class FireSpinnerPresentation(private val spinner: FireSpinner) : StatusBarWidge
 }
 
 class FireSpinner {
-    private val fireSpinner: ImageIcon = ImageIcon(javaClass.getResource("/gif/bonfire_darksouls_small.gif"))
+    private val fireSpinner: ImageIcon = ImageIcon(javaClass.getResource(SMALL_BONFIRE_GIF))
 
     fun getIcon(): ImageIcon {
         return fireSpinner

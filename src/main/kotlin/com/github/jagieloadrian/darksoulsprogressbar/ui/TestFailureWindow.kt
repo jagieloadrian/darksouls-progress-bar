@@ -59,7 +59,7 @@ object TestFailureWindow {
                 }
             })
             add(label)
-            accessibleContext.accessibleName = this.javaClass.simpleName
+            accessibleContext.accessibleName = getJavaClassName()
         }
 
         popup = JBPopupFactory.getInstance()
@@ -80,7 +80,6 @@ object TestFailureWindow {
         })
 
         popup?.showInFocusCenter()
-
         playSoundAndClose(soundUrl = soundUrl)
     }
 
@@ -110,5 +109,9 @@ object TestFailureWindow {
         }
         popup = null
         clip = null
+    }
+
+    private fun getJavaClassName():String {
+        return this.javaClass.simpleName
     }
 }

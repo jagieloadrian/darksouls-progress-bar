@@ -7,7 +7,7 @@ import com.intellij.openapi.application.ApplicationActivationListener;
 import com.intellij.openapi.wm.IdeFrame;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.UIManager;
 
 public class DSProgressBarComponent implements LafManagerListener, ApplicationActivationListener {
     private static final String PROGRESS_BAR_UI_KEY = "ProgressBarUI";

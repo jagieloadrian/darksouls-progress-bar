@@ -1,6 +1,8 @@
 package com.github.jagieloadrian.darksoulsprogressbar.settings
 
 import com.github.jagieloadrian.darksoulsprogressbar.model.Icons
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.TEST_FAILURE_WINDOW_DESC
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.SETTINGS_NAME
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.util.NlsContexts
@@ -23,7 +25,7 @@ class DSPluginConfigurable : Configurable {
     private lateinit var animateCheckbox: JCheckBox
 
     override fun getDisplayName(): @NlsContexts.ConfigurableName String {
-       return "DarkSouls progress bar"
+       return SETTINGS_NAME
     }
 
     override fun createComponent(): JComponent {
@@ -49,7 +51,7 @@ class DSPluginConfigurable : Configurable {
             content.add(row)
         }
 
-        animateCheckbox = JCheckBox("Play animation on failed build").apply {
+        animateCheckbox = JCheckBox(TEST_FAILURE_WINDOW_DESC).apply {
             isSelected = settings.animateOnFailedBuild
         }
         val scroll = JBScrollPane(content)
@@ -57,6 +59,7 @@ class DSPluginConfigurable : Configurable {
 
         panel.add(scroll, BorderLayout.CENTER)
         panel.add(animateCheckbox, BorderLayout.SOUTH)
+        panel.accessibleContext.accessibleName = this.javaClass.simpleName
         return panel
     }
 

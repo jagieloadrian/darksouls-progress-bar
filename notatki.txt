@@ -1,2 +1,5 @@
-2. dodać konfigurację
-3. dodać testy
+1. dopisac test w settingsach który sprawdza czy odpala failure window
+2. poprawić testy w dsprogress bar
+3. pomyśleć czy nie potrzebaw wiecej unit testów
+4. zmergować do maina
+5. manual release
