@@ -1,6 +1,6 @@
 package com.github.jagieloadrian.darksoulsprogressbar.service
 
-import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.CUSTOM_WIDGET_NAME
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.CUSTOM_WIDGET_NAME
 import com.intellij.openapi.project.Project
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe

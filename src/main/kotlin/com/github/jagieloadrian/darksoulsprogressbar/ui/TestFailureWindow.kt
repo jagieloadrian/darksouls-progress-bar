@@ -51,15 +51,16 @@ object TestFailureWindow {
 
         val panel = JPanel().apply {
             preferredSize = Dimension(icon.iconWidth, icon.iconHeight)
-            val label = JLabel(icon)
-            label.addMouseListener(object : MouseAdapter() {
-                override fun mouseClicked(e: MouseEvent?) {
-                    TestFailureWindow.hide()
-                    super.mouseClicked(e)
-                }
-            })
+            val label = JLabel(icon).apply {
+                accessibleContext.accessibleName = getJavaClassName()
+                addMouseListener(object : MouseAdapter() {
+                    override fun mouseClicked(e: MouseEvent?) {
+                        TestFailureWindow.hide()
+                        super.mouseClicked(e)
+                    }
+                })
+            }
             add(label)
-            accessibleContext.accessibleName = getJavaClassName()
         }
 
         popup = JBPopupFactory.getInstance()
