@@ -1,0 +1,3 @@
+3. pomyśleć czy nie potrzebaw wiecej unit testów
+4. zmergować do maina
+5. manual release

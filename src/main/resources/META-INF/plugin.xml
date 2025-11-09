@@ -1,15 +1,25 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.jagieloadrian.darksoulsprogressbar</id>
-    <name>darksouls-progress-bar</name>
+    <name>DarkSouls-Progress-Bar</name>
     <vendor>jagieloadrian</vendor>
 
     <depends>com.intellij.modules.platform</depends>
-
-    <resource-bundle>messages.MyBundle</resource-bundle>
-
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.jagieloadrian.darksoulsprogressbar.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.jagieloadrian.darksoulsprogressbar.startup.MyProjectActivity" />
+        <statusBarWidgetFactory
+                implementation="com.github.jagieloadrian.darksoulsprogressbar.service.DSSpinnerStatusBarFactory"
+                id="com.github.jagieloadrian.darksoulsprogressbar.service.DSSpinnerStatusBarFactory"/>
+        <postStartupActivity
+                implementation="com.github.jagieloadrian.darksoulsprogressbar.service.TestFailureStartActivity"/>
+        <projectConfigurable instance="com.github.jagieloadrian.darksoulsprogressbar.settings.DSPluginConfigurable"
+                             displayName="DarkSouls Progress Bar"
+                             id="com.github.jagieloadrian.darksoulsprogressbar.settings.DSPluginConfigurable"/>
     </extensions>
+
+    <applicationListeners>
+        <listener class="com.github.jagieloadrian.darksoulsprogressbar.listeners.DSProgressBarComponent"
+                  topic="com.intellij.ide.ui.LafManagerListener"/>
+        <listener class="com.github.jagieloadrian.darksoulsprogressbar.listeners.DSProgressBarComponent"
+                  topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+    </applicationListeners>
 </idea-plugin>
