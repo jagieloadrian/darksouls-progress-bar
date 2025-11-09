@@ -46,10 +46,6 @@ class DSProgressBarUI : BasicProgressBarUI() {
                 })
     }
 
-    override fun getBoxLength(availableLength: Int, otherDimension: Int): Int {
-        return super.getBoxLength(availableLength, otherDimension)
-    }
-
     override fun paintIndeterminate(g2d: Graphics?, c: JComponent?) {
         if (c != null) {
             c.accessibleContext?.accessibleName = this.javaClass.simpleName
@@ -74,7 +70,7 @@ class DSProgressBarUI : BasicProgressBarUI() {
         }
     }
 
-    fun paintProgressBar(
+    private fun paintProgressBar(
         g: Graphics?,
         c: JComponent?,
         backgroundIcon: ImageIcon,
@@ -83,11 +79,8 @@ class DSProgressBarUI : BasicProgressBarUI() {
     ) {
         if (g == null || c == null) return
         val g2 = g as Graphics2D
-
-        val w = c.width
-        val h = c.height
         val rectangle2D = getRoundRectangle(c.width, c.height)
-        paintProgressBarWithGif(g2, rectangle2D, backgroundIcon, w, h, c, centerIcon, xPosition)
+        paintProgressBarWithGif(g2, rectangle2D, backgroundIcon, c, centerIcon, xPosition)
         drawBorder(rectangle2D, g2)
 
     }
@@ -96,12 +89,12 @@ class DSProgressBarUI : BasicProgressBarUI() {
         g2: Graphics2D,
         rectangle2D: RoundRectangle2D,
         backgroundIcon: ImageIcon,
-        w: Int,
-        h: Int,
         c: JComponent,
         centerIcon: ImageIcon,
         xPosition: Int?,
     ) {
+        val w = c.width
+        val h = c.height
         g2.fill(rectangle2D)
         g2.drawImage(backgroundIcon.image, 0, 0, w, h, c)
 
