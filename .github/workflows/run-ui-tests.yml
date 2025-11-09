@@ -87,7 +87,7 @@ jobs:
 
       - name: Collect Test Results
         if: always()
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v5
         with:
           name: tests-result-${{ matrix.osName }}
           path: |
@@ -103,7 +103,7 @@ jobs:
 
       - name: Collect Test Report XML
         if: always()
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v5
         with:
           name: test-report-${{ matrix.osName }}
           path: ${{ github.workspace }}/build/test-results/uiTest/*.xml
