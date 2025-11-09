@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.jagieloadrian.darksoulsprogressbar</id>
-    <name>Darksouls-Progress-Bar</name>
+    <name>DarkSouls-Progress-Bar</name>
     <vendor>jagieloadrian</vendor>
 
     <depends>com.intellij.modules.platform</depends>
@@ -12,7 +12,7 @@
         <postStartupActivity
                 implementation="com.github.jagieloadrian.darksoulsprogressbar.service.TestFailureStartActivity"/>
         <projectConfigurable instance="com.github.jagieloadrian.darksoulsprogressbar.settings.DSPluginConfigurable"
-                             displayName="DarkSouls progress bar"
+                             displayName="DarkSouls Progress Bar"
                              id="com.github.jagieloadrian.darksoulsprogressbar.settings.DSPluginConfigurable"/>
     </extensions>
 
