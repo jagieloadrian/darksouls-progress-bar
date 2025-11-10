@@ -2,7 +2,7 @@
 # libraries
 coroutines = "1.10.2"
 junit = "5.14.0"
-junitJupiter = "5.14.0"
+junitJupiter = "6.0.1"
 junitPlatform = "1.14.0"
 kodein = "7.20.2"
 kotest = "6.0.4"
