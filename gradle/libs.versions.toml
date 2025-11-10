@@ -1,7 +1,7 @@
 [versions]
 # libraries
 coroutines = "1.10.2"
-junit = "5.14.0"
+junit = "6.0.1"
 junitJupiter = "5.14.0"
 junitPlatform = "1.14.0"
 kodein = "7.20.2"
