@@ -8,7 +8,7 @@ plugins {
     id("io.ktor.plugin") version "2.3.12"
 }
 
-group = "com.gft"
+group = "com.anjo"
 version = "1.0-SNAPSHOT"
 
 repositories {
