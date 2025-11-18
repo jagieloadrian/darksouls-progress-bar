@@ -6,6 +6,7 @@ import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.BACKGROUND_PROG
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.ui.scale.JBUIScale
 import java.awt.BasicStroke
+import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.geom.RoundRectangle2D
@@ -63,6 +64,12 @@ class DSProgressBarUI : BasicProgressBarUI() {
         }
     }
 
+    override fun getPreferredSize(c: JComponent?): Dimension {
+        val d:Dimension =  super.getPreferredSize(c)
+        d.height = 20
+        return d
+    }
+
     override fun paintDeterminate(g2d: Graphics?, c: JComponent?) {
         if (c != null) {
             c.accessibleContext?.accessibleName = this.javaClass.simpleName
@@ -117,13 +124,9 @@ class DSProgressBarUI : BasicProgressBarUI() {
     }
 
     private fun drawBorder(rectangle2D: RoundRectangle2D, graphics2D: Graphics2D) {
-        val color = graphics2D.color
-        val stroke = graphics2D.stroke
         graphics2D.color = progressBar.foreground
-        graphics2D.stroke = BasicStroke(2f)
+        graphics2D.stroke = BasicStroke(1f)
         graphics2D.draw(rectangle2D)
-        graphics2D.color = color
-        graphics2D.stroke = stroke
     }
 
     private fun getRoundRectangle(width: Int, height: Int): RoundRectangle2D {

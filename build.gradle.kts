@@ -63,7 +63,6 @@ dependencies {
     testImplementation(libs.mocking.mockk)
     testImplementation(libs.opentest4j)
     testImplementation(libs.kotest.assertion)
-    testImplementation(libs.junit.jupiter)
 
     uiTestImplementation(libs.kotest.assertion)
     uiTestImplementation(libs.kodein)
@@ -135,6 +134,7 @@ intellijPlatform {
 
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
+            untilBuild = provider { null }
         }
     }
 
