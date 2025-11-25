@@ -31,9 +31,10 @@ class DSFailingProcessHandler(
     fun shouldShowWindow(exitCode: Int, executorId: String): Boolean = exitCode != 0 && executorId == "Run"
 }
 
-class TestFailureStartActivity : ProjectActivity {
+class TestFailureStartActivity(
+    private val handler: DSFailingProcessHandler = DSFailingProcessHandler()) : ProjectActivity {
     override suspend fun execute(project: Project) {
         val connection = project.messageBus.connect()
-        connection.subscribe(ExecutionManager.EXECUTION_TOPIC, DSFailingProcessHandler())
+        connection.subscribe(ExecutionManager.EXECUTION_TOPIC, handler)
     }
 }

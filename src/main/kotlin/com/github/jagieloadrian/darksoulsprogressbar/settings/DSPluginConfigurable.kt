@@ -19,14 +19,13 @@ import javax.swing.JPanel
 import javax.swing.SwingConstants
 
 class DSPluginConfigurable(
-    private val configPanel: DSPluginConfiguratorApi = DSPluginConfigurator,
+    private val configPanel: DSPluginConfiguratorApi = DSPluginConfiguratorUI,
     private val persistence: DSPersistentState = DSPersistentState.getInstance(),
 ) : Configurable {
 
     private val checkboxMap = mutableMapOf<String, JCheckBox>()
-    private var animationCheckBox = JCheckBox(TEST_FAILURE_WINDOW_DESC).apply {
-        isSelected = persistence.animateOnFailedBuild
-    }
+    private var animationStatus = persistence.animateOnFailedBuild
+    private lateinit var animationCheckBox: JCheckBox
 
 
     override fun getDisplayName(): @NlsContexts.ConfigurableName String {
@@ -34,87 +33,112 @@ class DSPluginConfigurable(
     }
 
     override fun createComponent(): JComponent {
-        return configPanel.getPanel(animationCheckBox, persistence) { path, checkBox ->
+        val result = configPanel.getPanel(animationStatus, persistence) { path, checkBox ->
             checkboxMap[path] = checkBox
         }
+
+        animationCheckBox = result.animationCheckBox.also {
+            it.addActionListener {
+                animationStatus = animationCheckBox.isSelected
+            }
+        }
+        return result.panel
     }
 
     override fun isModified(): Boolean {
-        val settings = persistence
         val selectedNow = checkboxMap.filterValues { it.isSelected }.keys
-        return settings.iconPaths != selectedNow.toSet() ||
-                settings.animateOnFailedBuild != animationCheckBox.isSelected
+        return persistence.iconPaths != selectedNow.toSet() ||
+                persistence.animateOnFailedBuild != animationStatus
     }
 
     override fun apply() {
-        val settings = persistence
-        settings.iconPaths = checkboxMap
+        persistence.iconPaths = checkboxMap
             .filterValues { it.isSelected }
             .keys
             .toMutableSet()
-        settings.animateOnFailedBuild = animationCheckBox.isSelected
+        persistence.animateOnFailedBuild = animationStatus
 
         ApplicationManager.getApplication()
             .messageBus
             .syncPublisher(DSSettingsListener.TOPIC)
-            .settingsChanged(settings)
+            .settingsChanged(persistence)
     }
 
     override fun reset() {
-        val settings = persistence
         checkboxMap.forEach { (name, box) ->
-            box.isSelected = name in settings.iconPaths
+            box.isSelected = name in persistence.iconPaths
         }
-        animationCheckBox.isSelected = settings.animateOnFailedBuild
+        animationStatus = persistence.animateOnFailedBuild
+        if (::animationCheckBox.isInitialized) {
+            animationCheckBox.isSelected = animationStatus
+        }
+    }
+
+    override fun disposeUIResources() {
+        super.disposeUIResources()
+        if (::animationCheckBox.isInitialized) {
+            animationCheckBox.removeActionListener { }
+        }
     }
 }
 
 interface DSPluginConfiguratorApi {
     fun getPanel(
-        animationCheckBox: JCheckBox,
+        animationEnabled: Boolean,
         settings: DSPersistentState,
-        assignCheckBoxToPath: (String, JCheckBox) -> Unit
-    ): JPanel
+        assignCheckBoxToPath: (String, JCheckBox) -> Unit,
+    ): ConfigPanelResult
 }
 
-object DSPluginConfigurator : DSPluginConfiguratorApi {
+object DSPluginConfiguratorUI : DSPluginConfiguratorApi {
     override fun getPanel(
-        animationCheckBox: JCheckBox,
+        animationEnabled: Boolean,
         settings: DSPersistentState,
-        assignCheckBoxToPath: (String, JCheckBox) -> Unit
-    ): JPanel {
+        assignCheckBoxToPath: (String, JCheckBox) -> Unit,
+    ): ConfigPanelResult {
+
         val panel = JPanel(BorderLayout(10, 10))
-        val content = JPanel()
-        content.layout = BoxLayout(content, BoxLayout.Y_AXIS)
+        val content = JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+        }
 
-        val availableIcons = Icons.entries.toTypedArray()
+        Icons.entries.forEach { icon ->
+            val checkBox = JCheckBox(icon.iconName).apply {
+                horizontalAlignment = SwingConstants.LEFT
+                isSelected = icon.path in settings.iconPaths
+            }
 
-        availableIcons.forEach { icon ->
-            val checkBox = JCheckBox(icon.iconName)
-            checkBox.horizontalAlignment = SwingConstants.LEFT
-            checkBox.isSelected = icon.path in settings.iconPaths
+            val iconLabel = JLabel(ImageIcon(javaClass.getResource(icon.path))).apply {
+                horizontalAlignment = SwingConstants.CENTER
+            }
 
-            val iconLabel = JLabel(ImageIcon(javaClass.getResource(icon.path)))
-            iconLabel.horizontalAlignment = SwingConstants.CENTER
-            val row = JPanel(FlowLayout(FlowLayout.LEFT))
-            row.add(iconLabel)
-            row.add(checkBox)
+            JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+                add(iconLabel)
+                add(checkBox)
+                content.add(this)
+            }
 
             assignCheckBoxToPath(icon.path, checkBox)
-            content.add(row)
         }
 
         val animationCheckBox = JCheckBox(TEST_FAILURE_WINDOW_DESC).apply {
-        isSelected = settings.animateOnFailedBuild
-    }
+            isSelected = animationEnabled
+        }
 
-        val scroll = JBScrollPane(content)
-        scroll.preferredSize = Dimension(400, 250)
+        val scroll = JBScrollPane(content).apply {
+            preferredSize = Dimension(400, 250)
+        }
 
         panel.add(scroll, BorderLayout.CENTER)
         panel.add(animationCheckBox, BorderLayout.SOUTH)
-        panel.accessibleContext.accessibleName = this.javaClass.simpleName
-        return panel
+        panel.accessibleContext.accessibleName = "DSPluginConfigPanel"
+
+        return ConfigPanelResult(panel, animationCheckBox)
     }
 
 }
+
+data class ConfigPanelResult(
+    val panel: JPanel,
+    val animationCheckBox: JCheckBox,
+)

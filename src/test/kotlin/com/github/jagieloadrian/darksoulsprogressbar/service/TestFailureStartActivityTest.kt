@@ -9,7 +9,6 @@ import com.intellij.util.messages.MessageHandler
 import com.intellij.util.messages.SimpleMessageBusConnection
 import com.intellij.util.messages.Topic
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
@@ -23,12 +22,13 @@ class TestFailureStartActivityTest {
         // given
         val stubConnection = StubMessageBusConnection()
         val stubBus = StubMessageBus(stubConnection, null, true)
+        val handler = mockk<DSFailingProcessHandler>(relaxed = true)
 
         // mocks
         val project = mockk<Project>()
         every { project.messageBus } returns stubBus
 
-        val activity = TestFailureStartActivity()
+        val activity = TestFailureStartActivity(handler)
 
         // when
         activity.execute(project)
@@ -39,7 +39,7 @@ class TestFailureStartActivityTest {
         val (topic, listener) = stubConnection.subs.first()
 
         topic shouldBe ExecutionManager.EXECUTION_TOPIC
-        listener.shouldBeInstanceOf<DSFailingProcessHandler>()
+        listener shouldBe handler
     }
 }
 
@@ -55,7 +55,7 @@ class StubMessageBusConnection : SimpleMessageBusConnection, MessageBusConnectio
     }
 
     override fun <L : Any> subscribe(topic: Topic<L>) {
-      throw UnsupportedOperationException()
+        throw UnsupportedOperationException()
     }
 
     override fun setDefaultHandler(handler: MessageHandler?) {
@@ -80,7 +80,7 @@ class StubMessageBus(
 ) : MessageBus {
     override fun connect(): MessageBusConnection = connection
     override fun simpleConnect(): SimpleMessageBusConnection {
-            return connection
+        return connection
     }
 
     override fun connect(parentDisposable: Disposable): MessageBusConnection {
