@@ -20,7 +20,11 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
-object TestFailureWindow {
+interface TestFailureWindowApi{
+    fun show()
+}
+
+object TestFailureWindowUI : TestFailureWindowApi{
     private var shouldShow = DSPersistentState.getInstance().animateOnFailedBuild
     private var popup: JBPopup? = null
     private var clip: Clip? = null
@@ -38,7 +42,7 @@ object TestFailureWindow {
                 })
     }
 
-    fun show() {
+    override fun show() {
         if (!shouldShow) {
             return
         }
@@ -55,7 +59,7 @@ object TestFailureWindow {
                 accessibleContext.accessibleName = getJavaClassName()
                 addMouseListener(object : MouseAdapter() {
                     override fun mouseClicked(e: MouseEvent?) {
-                        TestFailureWindow.hide()
+                        TestFailureWindowUI.hide()
                         super.mouseClicked(e)
                     }
                 })

@@ -1,8 +1,8 @@
 package com.github.jagieloadrian.darksoulsprogressbar.settings
 
 import com.github.jagieloadrian.darksoulsprogressbar.model.Icons
-import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.TEST_FAILURE_WINDOW_DESC
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.SETTINGS_NAME
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.TEST_FAILURE_WINDOW_DESC
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.util.NlsContexts
@@ -18,19 +18,72 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants
 
-class DSPluginConfigurable : Configurable {
+class DSPluginConfigurable(
+    private val configPanel: DSPluginConfiguratorApi = DSPluginConfigurator,
+    private val persistence: DSPersistentState = DSPersistentState.getInstance(),
+) : Configurable {
 
-    private lateinit var panel: JPanel
     private val checkboxMap = mutableMapOf<String, JCheckBox>()
-    private lateinit var animateCheckbox: JCheckBox
+    private var animationCheckBox = JCheckBox(TEST_FAILURE_WINDOW_DESC).apply {
+        isSelected = persistence.animateOnFailedBuild
+    }
+
 
     override fun getDisplayName(): @NlsContexts.ConfigurableName String {
-       return SETTINGS_NAME
+        return SETTINGS_NAME
     }
 
     override fun createComponent(): JComponent {
-        val settings = DSPersistentState.getInstance()
-        panel = JPanel(BorderLayout(10,10))
+        return configPanel.getPanel(animationCheckBox, persistence) { path, checkBox ->
+            checkboxMap[path] = checkBox
+        }
+    }
+
+    override fun isModified(): Boolean {
+        val settings = persistence
+        val selectedNow = checkboxMap.filterValues { it.isSelected }.keys
+        return settings.iconPaths != selectedNow.toSet() ||
+                settings.animateOnFailedBuild != animationCheckBox.isSelected
+    }
+
+    override fun apply() {
+        val settings = persistence
+        settings.iconPaths = checkboxMap
+            .filterValues { it.isSelected }
+            .keys
+            .toMutableSet()
+        settings.animateOnFailedBuild = animationCheckBox.isSelected
+
+        ApplicationManager.getApplication()
+            .messageBus
+            .syncPublisher(DSSettingsListener.TOPIC)
+            .settingsChanged(settings)
+    }
+
+    override fun reset() {
+        val settings = persistence
+        checkboxMap.forEach { (name, box) ->
+            box.isSelected = name in settings.iconPaths
+        }
+        animationCheckBox.isSelected = settings.animateOnFailedBuild
+    }
+}
+
+interface DSPluginConfiguratorApi {
+    fun getPanel(
+        animationCheckBox: JCheckBox,
+        settings: DSPersistentState,
+        assignCheckBoxToPath: (String, JCheckBox) -> Unit
+    ): JPanel
+}
+
+object DSPluginConfigurator : DSPluginConfiguratorApi {
+    override fun getPanel(
+        animationCheckBox: JCheckBox,
+        settings: DSPersistentState,
+        assignCheckBoxToPath: (String, JCheckBox) -> Unit
+    ): JPanel {
+        val panel = JPanel(BorderLayout(10, 10))
         val content = JPanel()
         content.layout = BoxLayout(content, BoxLayout.Y_AXIS)
 
@@ -47,48 +100,21 @@ class DSPluginConfigurable : Configurable {
             row.add(iconLabel)
             row.add(checkBox)
 
-            checkboxMap[icon.path] = checkBox
+            assignCheckBoxToPath(icon.path, checkBox)
             content.add(row)
         }
 
-        animateCheckbox = JCheckBox(TEST_FAILURE_WINDOW_DESC).apply {
-            isSelected = settings.animateOnFailedBuild
-        }
+        val animationCheckBox = JCheckBox(TEST_FAILURE_WINDOW_DESC).apply {
+        isSelected = settings.animateOnFailedBuild
+    }
+
         val scroll = JBScrollPane(content)
-        scroll.preferredSize = Dimension(400,250)
+        scroll.preferredSize = Dimension(400, 250)
 
         panel.add(scroll, BorderLayout.CENTER)
-        panel.add(animateCheckbox, BorderLayout.SOUTH)
+        panel.add(animationCheckBox, BorderLayout.SOUTH)
         panel.accessibleContext.accessibleName = this.javaClass.simpleName
         return panel
     }
 
-    override fun isModified(): Boolean {
-        val settings = DSPersistentState.getInstance()
-        val selectedNow = checkboxMap.filterValues { it.isSelected }.keys
-        return settings.iconPaths != selectedNow.toSet() ||
-                settings.animateOnFailedBuild != animateCheckbox.isSelected
-    }
-
-    override fun apply() {
-        val settings = DSPersistentState.getInstance()
-        settings.iconPaths = checkboxMap
-            .filterValues { it.isSelected }
-            .keys
-            .toMutableSet()
-        settings.animateOnFailedBuild = animateCheckbox.isSelected
-
-        ApplicationManager.getApplication()
-            .messageBus
-            .syncPublisher(DSSettingsListener.TOPIC)
-            .settingsChanged(settings)
-    }
-
-    override fun reset() {
-        val settings = DSPersistentState.getInstance()
-        checkboxMap.forEach { (name, box) ->
-            box.isSelected = name in settings.iconPaths
-        }
-        animateCheckbox.isSelected = settings.animateOnFailedBuild
-    }
 }
