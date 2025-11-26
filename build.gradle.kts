@@ -55,12 +55,15 @@ val uiTestRuntimeOnly: Configuration by configurations.getting {
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
     testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.assertj)
+    testImplementation(libs.junit.mockito)
     testImplementation(libs.junit.jupiter.core)
     testImplementation(libs.junit.jupiter.params)
     testImplementation(libs.junit.jupiter.engine)
     testImplementation(libs.junit.platform.launcher)
     testImplementation(libs.junit.platform.suite.engine)
     testImplementation(libs.mocking.mockk)
+    testImplementation(libs.mocking.mockito)
     testImplementation(libs.opentest4j)
     testImplementation(libs.kotest.assertion)
 

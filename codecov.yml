@@ -12,3 +12,4 @@ coverage:
 ignore:
   - src/test/
   - src/uiTest/
+  - "**/*UI.kt"
