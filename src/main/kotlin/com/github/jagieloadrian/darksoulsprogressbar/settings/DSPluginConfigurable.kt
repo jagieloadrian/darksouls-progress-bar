@@ -65,13 +65,6 @@ class DSPluginConfigurable(
             animationCheckBox.isSelected = animationStatus
         }
     }
-
-    override fun disposeUIResources() {
-        super.disposeUIResources()
-        if (::animationCheckBox.isInitialized) {
-            animationCheckBox.removeActionListener { }
-        }
-    }
 }
 
 data class ConfigPanelResult(

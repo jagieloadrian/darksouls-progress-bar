@@ -29,7 +29,7 @@ import kotlin.io.path.Path
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-@Tag("ui")
+@Tag("com/github/jagieloadrian/darksoulsprogressbar/ui")
 class DSPluginSettingUITest {
     companion object {
         private lateinit var run: BackgroundRun

@@ -5,7 +5,6 @@ import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.CUSTOM_WIDGET_N
 import com.intellij.driver.sdk.invokeAction
 import com.intellij.driver.sdk.ui.components.UiComponent
 import com.intellij.driver.sdk.ui.components.ideFrame
-import com.intellij.driver.sdk.ui.components.searchEverywherePopup
 import com.intellij.driver.sdk.ui.xQuery
 import com.intellij.driver.sdk.waitFor
 import com.intellij.driver.sdk.waitForProjectOpen
@@ -35,7 +34,7 @@ import kotlin.io.path.Path
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-@Tag("ui")
+@Tag("com/github/jagieloadrian/darksoulsprogressbar/ui")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class DSProgressBarTest {
     companion object {

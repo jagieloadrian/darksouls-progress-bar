@@ -9,6 +9,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,7 +35,7 @@ class DSPluginConfigurableTest {
 
         panelCheckBox1 = JCheckBox("Red circle")
         panelCheckBox2 = JCheckBox("Blue square")
-        animationCheckBox = JCheckBox("Animate on failed build")
+        animationCheckBox = spyk(JCheckBox("Animate on failed build"))
 
         every {
             configPanel.getPanel(any(), persistence, any())

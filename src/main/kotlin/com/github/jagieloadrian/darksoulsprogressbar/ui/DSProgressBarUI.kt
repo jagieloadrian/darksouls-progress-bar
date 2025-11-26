@@ -9,7 +9,9 @@ import java.awt.BasicStroke
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Graphics2D
+import java.awt.GraphicsEnvironment
 import java.awt.geom.RoundRectangle2D
+import java.awt.image.BufferedImage
 import javax.swing.ImageIcon
 import javax.swing.JComponent
 import javax.swing.Timer
@@ -19,21 +21,23 @@ class DSProgressBarUI : BasicProgressBarUI() {
 
     private val background: ImageIcon = ImageIcon(javaClass.getResource(BACKGROUND_PROGRESS_BAR_GIF))
     private var iconsToUse = DSPersistentState.getInstance().iconPaths
-    private val chosenGif: ImageIcon = ImageIcon(javaClass.getResource(iconsToUse.random()))
+    private val chosenGif: ImageIcon = loadIconSafely(iconsToUse.random())
+    private val timer = Timer(32) { // ~30 FPS
+        if (shouldBackward) {
+            gifXPosition -= gifSpeed
+        } else {
+            gifXPosition += gifSpeed
+        }
+    }
+
     private var gifXPosition = 0f
     private val gifSpeed = 2f
     private var shouldBackward = false
 
     init {
-        // Set up a timer to update the GIF position and trigger repaint
-        val timer = Timer(32) { // ~30 FPS
-            if (shouldBackward) {
-                gifXPosition -= gifSpeed
-            } else {
-                gifXPosition += gifSpeed
-            }
+        if (!GraphicsEnvironment.isHeadless()) {
+            timer.start()
         }
-        timer.start()
 
         ApplicationManager.getApplication()
             .messageBus
@@ -65,7 +69,7 @@ class DSProgressBarUI : BasicProgressBarUI() {
     }
 
     override fun getPreferredSize(c: JComponent?): Dimension {
-        val d:Dimension =  super.getPreferredSize(c)
+        val d: Dimension = super.getPreferredSize(c)
         d.height = 20
         return d
     }
@@ -140,5 +144,18 @@ class DSProgressBarUI : BasicProgressBarUI() {
             arcLength,
             arcLength,
         )
+    }
+
+    private fun loadIconSafely(path: String): ImageIcon {
+        val url = javaClass.getResource(path)
+            ?: Thread.currentThread().contextClassLoader.getResource(path)
+            ?: ClassLoader.getSystemResource(path)
+
+        return url?.let {
+            ImageIcon(it)
+        } ?: run {
+            val img = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
+            ImageIcon(img)
+        }
     }
 }
