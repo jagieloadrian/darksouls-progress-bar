@@ -1,5 +1,6 @@
 package com.github.jagieloadrian.darksoulsprogressbar.settings
 
+import com.github.jagieloadrian.darksoulsprogressbar.ui.DSPluginConfiguratorApi
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.SETTINGS_NAME
 import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
