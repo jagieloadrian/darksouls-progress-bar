@@ -5,40 +5,28 @@ import com.github.jagieloadrian.darksoulsprogressbar.settings.DSSettingsListener
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.BACKGROUND_PROGRESS_BAR_GIF
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.ui.scale.JBUIScale
+import kotlinx.datetime.Clock.System.now
 import java.awt.BasicStroke
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Graphics2D
-import java.awt.GraphicsEnvironment
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
 import javax.swing.ImageIcon
 import javax.swing.JComponent
-import javax.swing.Timer
 import javax.swing.plaf.basic.BasicProgressBarUI
+import kotlin.math.abs
+import kotlin.math.sin
 
 class DSProgressBarUI : BasicProgressBarUI() {
 
     private val background: ImageIcon = ImageIcon(javaClass.getResource(BACKGROUND_PROGRESS_BAR_GIF))
     private var iconsToUse = DSPersistentState.getInstance().iconPaths
     private val chosenGif: ImageIcon = loadIconSafely(iconsToUse.random())
-    private val timer = Timer(32) { // ~30 FPS
-        if (shouldBackward) {
-            gifXPosition -= gifSpeed
-        } else {
-            gifXPosition += gifSpeed
-        }
-    }
-
-    private var gifXPosition = 0f
-    private val gifSpeed = 2f
-    private var shouldBackward = false
+    private val cycleDurationMs = 5000 //in milliseconds
+    private val startTime = now().toEpochMilliseconds()
 
     init {
-        if (!GraphicsEnvironment.isHeadless()) {
-            timer.start()
-        }
-
         ApplicationManager.getApplication()
             .messageBus
             .connect()
@@ -54,19 +42,12 @@ class DSProgressBarUI : BasicProgressBarUI() {
     override fun paintIndeterminate(g2d: Graphics?, c: JComponent?) {
         if (c != null) {
             c.accessibleContext?.accessibleName = this.javaClass.simpleName
-            changeShouldBackward(gifXPosition.toInt(), c.width, chosenGif.iconWidth)
-            paintProgressBar(g2d, c, background, chosenGif, gifXPosition.toInt())
+            val gifXPosition = calculateXOffset(c.width)
+            paintProgressBar(g2d, c, background, chosenGif, gifXPosition)
+            c.repaint(17)
         }
     }
 
-    private fun changeShouldBackward(xPosition: Int, componentWidth: Int, iconWidth: Int) {
-        if (xPosition > componentWidth) {
-            shouldBackward = true
-        }
-        if (xPosition + iconWidth < 0) {
-            shouldBackward = false
-        }
-    }
 
     override fun getPreferredSize(c: JComponent?): Dimension {
         val d: Dimension = super.getPreferredSize(c)
@@ -93,7 +74,6 @@ class DSProgressBarUI : BasicProgressBarUI() {
         val rectangle2D = getRoundRectangle(c.width, c.height)
         paintProgressBarWithGif(g2, rectangle2D, backgroundIcon, c, centerIcon, xPosition)
         drawBorder(rectangle2D, g2)
-
     }
 
     private fun paintProgressBarWithGif(
@@ -157,5 +137,12 @@ class DSProgressBarUI : BasicProgressBarUI() {
             val img = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
             ImageIcon(img)
         }
+    }
+
+    private fun calculateXOffset(availableWidth: Int): Int {
+        val elapsed = (now().toEpochMilliseconds() - startTime) % cycleDurationMs
+        val progress = elapsed.toDouble() / cycleDurationMs
+
+      return (availableWidth * abs(sin(progress * Math.PI))).toInt()
     }
 }

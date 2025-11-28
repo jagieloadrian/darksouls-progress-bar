@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.nio.file.Paths
 
-@Tag("com/github/jagieloadrian/darksoulsprogressbar/ui")
+@Tag("ui")
 class SimpleContextTest {
 
     @Test
