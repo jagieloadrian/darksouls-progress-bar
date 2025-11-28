@@ -16,9 +16,10 @@ import org.jetbrains.annotations.NonNls
 import java.awt.Desktop
 import java.awt.event.MouseEvent
 import java.net.URI
+import javax.swing.Icon
 import javax.swing.ImageIcon
 
-class DSSpinnerStatusBarFactory: StatusBarWidgetFactory {
+class DSSpinnerStatusBarFactory : StatusBarWidgetFactory {
     override fun getId(): @NonNls String = CUSTOM_WIDGET_NAME
     override fun getDisplayName(): @NlsContexts.ConfigurableName String = CUSTOM_WIDGET_NAME
 
@@ -26,7 +27,7 @@ class DSSpinnerStatusBarFactory: StatusBarWidgetFactory {
         project: Project,
         scope: CoroutineScope,
     ): StatusBarWidget {
-       return FireSpinnerWidget()
+        return FireSpinnerWidget()
     }
 
     override fun disposeWidget(widget: StatusBarWidget) {
@@ -39,26 +40,33 @@ class DSSpinnerStatusBarFactory: StatusBarWidgetFactory {
     override fun isAvailable(project: Project): Boolean = true
 }
 
-class FireSpinnerWidget : StatusBarWidget, StatusBarWidget.Multiframe {
+class FireSpinnerWidget : StatusBarWidget.Multiframe, StatusBarWidget.IconPresentation {
     private val spinner = FireSpinner()
+    private val soundtracks = listOf(
+        DS_ONE_SOUNDTRACK, DS_TWO_SOUNDTRACK,
+        DS_THREE_SOUNDTRACK, ELDEN_RING_SOUNDTRACK
+    )
+
     override fun ID(): @NonNls String {
         return CUSTOM_WIDGET_NAME
     }
 
     override fun getPresentation(): StatusBarWidget.WidgetPresentation {
-        return FireSpinnerPresentation(spinner)
+        return this
     }
 
     override fun copy(): StatusBarWidget {
         return FireSpinnerWidget()
     }
-}
 
-class FireSpinnerPresentation(private val spinner: FireSpinner) : StatusBarWidget.IconPresentation {
-    private val soundtracks = listOf(DS_ONE_SOUNDTRACK, DS_TWO_SOUNDTRACK,
-        DS_THREE_SOUNDTRACK, ELDEN_RING_SOUNDTRACK)
+    override fun getIcon(): Icon {
+        return spinner.getIcon()
+    }
 
-    override fun getTooltipText(): String = CUSTOM_WIDGET_NAME
+    override fun getTooltipText(): @NlsContexts.Tooltip String {
+        return CUSTOM_WIDGET_NAME
+    }
+
     override fun getClickConsumer(): Consumer<MouseEvent> {
         return Consumer {
             try {
@@ -70,9 +78,6 @@ class FireSpinnerPresentation(private val spinner: FireSpinner) : StatusBarWidge
                 e.printStackTrace()
             }
         }
-    }
-    override fun getIcon(): ImageIcon {
-       return spinner.getIcon()
     }
 }
 

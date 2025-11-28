@@ -33,7 +33,7 @@ class FireSpinnerWidgetTest {
 
         //then
         actual shouldNotBe null
-        actual.shouldBeInstanceOf<FireSpinnerPresentation>()
+        actual.shouldBeInstanceOf<FireSpinnerWidget>()
     }
 
     @Test

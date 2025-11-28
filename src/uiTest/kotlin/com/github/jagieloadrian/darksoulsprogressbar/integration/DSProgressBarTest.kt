@@ -34,7 +34,7 @@ import kotlin.io.path.Path
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-@Tag("com/github/jagieloadrian/darksoulsprogressbar/ui")
+@Tag("ui")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class DSProgressBarTest {
     companion object {
