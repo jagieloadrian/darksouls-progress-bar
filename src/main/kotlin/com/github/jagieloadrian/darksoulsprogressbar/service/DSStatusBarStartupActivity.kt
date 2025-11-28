@@ -40,8 +40,7 @@ class DSSpinnerStatusBarFactory : StatusBarWidgetFactory {
     override fun isAvailable(project: Project): Boolean = true
 }
 
-class FireSpinnerWidget : StatusBarWidget.Multiframe, StatusBarWidget.IconPresentation {
-    private val spinner = FireSpinner()
+class FireSpinnerWidget(private val spinner: FireSpinner = FireSpinner()) : StatusBarWidget.Multiframe, StatusBarWidget.IconPresentation {
     private val soundtracks = listOf(
         DS_ONE_SOUNDTRACK, DS_TWO_SOUNDTRACK,
         DS_THREE_SOUNDTRACK, ELDEN_RING_SOUNDTRACK
