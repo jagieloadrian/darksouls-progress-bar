@@ -1,10 +1,11 @@
 package com.github.jagieloadrian.darksoulsprogressbar.integration
 
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.SETTINGS_NAME
-import com.intellij.driver.sdk.ui.components.IdeaFrameUI
+import com.intellij.driver.sdk.ui.UiText.Companion.asString
 import com.intellij.driver.sdk.ui.components.UiComponent
-import com.intellij.driver.sdk.ui.components.checkBox
-import com.intellij.driver.sdk.ui.components.ideFrame
+import com.intellij.driver.sdk.ui.components.common.IdeaFrameUI
+import com.intellij.driver.sdk.ui.components.common.ideFrame
+import com.intellij.driver.sdk.ui.components.elements.checkBox
 import com.intellij.driver.sdk.ui.xQuery
 import com.intellij.driver.sdk.waitFor
 import com.intellij.driver.sdk.waitForProjectOpen
@@ -15,6 +16,7 @@ import com.intellij.ide.starter.models.TestCase
 import com.intellij.ide.starter.plugins.PluginConfigurator
 import com.intellij.ide.starter.project.LocalProjectInfo
 import com.intellij.ide.starter.runner.Starter
+import com.intellij.platform.ide.progress.ModalTaskOwner.project
 import com.intellij.util.applyIf
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
@@ -68,7 +70,7 @@ class DSPluginSettingUITest {
                 openSettingsAndChooseMyPluginLeftTab()
                 //checking name on top of custom settings
                 val breadcrumbs = x(xQuery { byVisibleText(SETTINGS_NAME) })
-                breadcrumbs.allTextAsString() shouldContain SETTINGS_NAME
+                breadcrumbs.getAllTexts().asString() shouldContain SETTINGS_NAME
                 // Get info about options (list of checkboxes, all should be enabled
                 val options = getOptions()
                 val allOptions = options.size
@@ -96,9 +98,9 @@ class DSPluginSettingUITest {
                     .map { it.checkBox() }
                     .filter { !it.isSelected() }
                     .map { it.getParent() }
-                    .map { it.allTextAsString() }
+                    .map { it.getAllTexts().asString() }
                 disabledOptions shouldContainExactlyInAnyOrder switchedOffOptions.map {
-                    it.getParent().allTextAsString()
+                    it.getParent().getAllTexts().asString()
                 }
             }
         }
@@ -111,8 +113,8 @@ class DSPluginSettingUITest {
         waitFor(timeout = 30.seconds) {
             settingItem = x(xQuery { byClass("MyTree") })
             settingItem.present()
-                    && settingItem.isVisible()
-                    && settingItem.allTextAsString().contains(SETTINGS_NAME)
+                    && settingItem.component.isShowing()
+                    && settingItem.getAllTexts().asString().contains(SETTINGS_NAME)
         }
         //click DarkSouls tab on left list
         settingItem.getAllTexts().first {

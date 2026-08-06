@@ -17,7 +17,7 @@ version = providers.gradleProperty("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 // Configure project's dependencies
@@ -66,6 +66,7 @@ dependencies {
     testImplementation(libs.mocking.mockito)
     testImplementation(libs.opentest4j)
     testImplementation(libs.kotest.assertion)
+    testRuntimeOnly(libs.junit4)
 
     uiTestImplementation(libs.kotest.assertion)
     uiTestImplementation(libs.kodein)
@@ -90,7 +91,6 @@ dependencies {
         // Module Dependencies. Uses `platformBundledModules` property from the gradle.properties file for bundled IntelliJ Platform modules.
         bundledModules(providers.gradleProperty("platformBundledModules").map { it.split(',') })
 
-        testFramework(TestFrameworkType.Starter)
         // UI Test framework dependencies
         testFramework(
             TestFrameworkType.Starter,
@@ -171,6 +171,17 @@ changelog {
 
 // Configure Gradle Kover Plugin - read more: https://github.com/Kotlin/kotlinx-kover#configuration
 kover {
+    currentProject {
+        sources {
+            excludedSourceSets.add("uiTest")
+        }
+        // ponytail: Kover auto-wires every Test task into `koverXmlReport`/`koverVerify`,
+        // which `check` (and thus `build`) depends on — that's what boots a real IDE on
+        // `gradle clean build`. Excluding sources alone doesn't stop it from being *run*.
+        instrumentation {
+            disabledForTestTasks.add("uiTest")
+        }
+    }
     reports {
         total {
             xml {

@@ -4,7 +4,7 @@ import com.github.jagieloadrian.darksoulsprogressbar.utils.Items
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.CUSTOM_WIDGET_NAME
 import com.intellij.driver.sdk.invokeAction
 import com.intellij.driver.sdk.ui.components.UiComponent
-import com.intellij.driver.sdk.ui.components.ideFrame
+import com.intellij.driver.sdk.ui.components.common.ideFrame
 import com.intellij.driver.sdk.ui.xQuery
 import com.intellij.driver.sdk.waitFor
 import com.intellij.driver.sdk.waitForProjectOpen
@@ -75,7 +75,7 @@ class DSProgressBarTest {
                 waitForProjectOpen(1.minutes)
                 val progressBars = x(xQuery { byAccessibleName("DSProgressBarUI") })
 
-                progressBars.isVisible() shouldBe true
+                progressBars.component.isShowing() shouldBe true
                 progressBars.isEnabled() shouldBe true
                 progressBars.component.getClass().toString() shouldContain JProgressBar::class.java.toString()
                 progressBars.component.isShowing() shouldBe true
@@ -109,11 +109,11 @@ class DSProgressBarTest {
                 invokeAction("RunAnything")
                 waitFor(timeout = 30.seconds) {
                     val searchField = x(xQuery { byClass("SearchField") })
-                    searchField.present() && searchField.isVisible()
+                    searchField.present() && searchField.component.isShowing()
                 }
 
                 keyboard {
-                    enterText("gradle clean build")
+                    typeText("gradle clean build")
                     enter()
                 }
 
@@ -124,7 +124,7 @@ class DSProgressBarTest {
                 }
 
                 failureWindow shouldNotBe null
-                failureWindow.isVisible() shouldBe true
+                failureWindow.component.isShowing() shouldBe true
                 failureWindow.isEnabled() shouldBe true
                 val failureWindowComponent = failureWindow.component
 
