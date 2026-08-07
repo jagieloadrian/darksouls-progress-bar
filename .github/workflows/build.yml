@@ -162,15 +162,8 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
       # Run UI Tests
-      # ponytail: retry loop, JetBrains cache-redirector sometimes 502s on metadata fetch; drop when JetBrains fixes it
       - name: Run UI Tests
-        run: |
-          for i in 1 2 3; do
-            xvfb-run --auto-servernum ./gradlew uiTest && exit 0
-            echo "Attempt $i failed, retrying..."
-            sleep 30
-          done
-          exit 1
+        run: xvfb-run --auto-servernum ./gradlew uiTest
 
       # Collect UI Tests Result of failed tests
       - name: Collect UI Tests Result
