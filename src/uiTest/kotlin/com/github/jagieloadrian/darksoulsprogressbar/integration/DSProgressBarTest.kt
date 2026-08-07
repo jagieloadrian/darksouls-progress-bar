@@ -36,6 +36,7 @@ import javax.swing.JLabel
 import javax.swing.JProgressBar
 import kotlin.io.path.Path
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @Tag("ui")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
@@ -119,8 +120,10 @@ class DSProgressBarTest {
                 }
                 editRunConfigurationsDialog {
                     // ponytail: fresh sandbox has no persisted tree UI state, so the config type
-                    // nodes render collapsed and "alwaysFail" isn't in the accessible tree yet
-                    tree().expandAll()
+                    // nodes render collapsed and "alwaysFail" isn't in the accessible tree yet.
+                    // Default expandAll() timeout (5s) is too tight while CI's 2-core runner is
+                    // also churning through a cold nested Gradle sync at the same time.
+                    tree().expandAll(30.seconds)
                     x(xQuery { byVisibleText("alwaysFail") }).click()
                     runButton.click()
                 }
