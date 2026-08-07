@@ -125,17 +125,12 @@ class DSProgressBarUI : BasicProgressBarUI() {
         )
     }
 
+    // ponytail: iconPaths comes from persisted XML state and can reference a path that
+    // no longer exists as a resource (renamed/removed icon, corrupted state). Fall back
+    // to a blank image instead of crashing paintIndeterminate.
     private fun loadIconSafely(path: String): ImageIcon {
         val url = javaClass.getResource(path)
-            ?: Thread.currentThread().contextClassLoader.getResource(path)
-            ?: ClassLoader.getSystemResource(path)
-
-        return url?.let {
-            ImageIcon(it)
-        } ?: run {
-            val img = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
-            ImageIcon(img)
-        }
+        return if (url != null) ImageIcon(url) else ImageIcon(BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB))
     }
 
     private fun calculateXOffset(availableWidth: Int): Int {

@@ -75,7 +75,6 @@ dependencies {
     testRuntimeOnly(libs.junit4)
 
     uiTestImplementation(libs.kotest.assertion)
-    uiTestImplementation(libs.kodein)
     uiTestImplementation(libs.coroutines)
     uiTestImplementation(libs.junit.jupiter.core)
     uiTestRuntimeOnly(libs.junit.platform.launcher)
@@ -171,7 +170,6 @@ intellijPlatform {
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
 changelog {
-    groups.empty()
     repositoryUrl = providers.gradleProperty("pluginRepositoryUrl")
 }
 

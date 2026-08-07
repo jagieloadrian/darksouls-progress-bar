@@ -3,25 +3,15 @@ package com.github.jagieloadrian.darksoulsprogressbar.service
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.CUSTOM_WIDGET_NAME
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.kotest.matchers.types.shouldNotBeSameInstanceAs
-import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import javax.swing.ImageIcon
 
-@ExtendWith(MockKExtension::class)
 class FireSpinnerWidgetTest {
 
-    @RelaxedMockK
-    lateinit var spinner: FireSpinner
-
-    @InjectMockKs
-    lateinit var widget: FireSpinnerWidget
+    private val widget = FireSpinnerWidget()
 
     @Test
     fun `should return expected ID`() {
@@ -62,16 +52,13 @@ class FireSpinnerWidgetTest {
     }
 
     @Test
-    fun `should return expected image icon`() {
-        //given
-        val mockIcon = mockk<ImageIcon>()
-        every { spinner.getIcon() } returns mockIcon
-
+    fun `should return image icon`() {
         //when
         val actual = widget.getIcon()
 
         //then
-        actual shouldBe mockIcon
+        actual.shouldBeInstanceOf<ImageIcon>()
+        actual.description shouldContain "gif"
     }
 
     @Test

@@ -57,7 +57,7 @@ object TestFailureWindowUI : TestFailureWindowApi{
         val panel = JPanel().apply {
             preferredSize = Dimension(icon.iconWidth, icon.iconHeight)
             val label = JLabel(icon).apply {
-                accessibleContext.accessibleName = getJavaClassName()
+                accessibleContext.accessibleName = javaClass.simpleName
                 addMouseListener(object : MouseAdapter() {
                     override fun mouseClicked(e: MouseEvent?) {
                         TestFailureWindowUI.hide()
@@ -115,9 +115,5 @@ object TestFailureWindowUI : TestFailureWindowApi{
         }
         popup = null
         clip = null
-    }
-
-    private fun getJavaClassName():String {
-        return this.javaClass.simpleName
     }
 }
