@@ -4,6 +4,7 @@ import com.github.jagieloadrian.darksoulsprogressbar.utils.Items
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.CUSTOM_WIDGET_NAME
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.TEST_FAILURE_WINDOW_NAME
 import com.intellij.driver.sdk.ui.components.UiComponent
+import com.intellij.driver.sdk.ui.components.common.dialogs.editRunConfigurationsDialog
 import com.intellij.driver.sdk.ui.components.common.ideFrame
 import com.intellij.driver.sdk.ui.components.common.popups.runConfigurationsList
 import com.intellij.driver.sdk.ui.components.common.popups.runConfigurationsPopup
@@ -108,12 +109,16 @@ class DSProgressBarTest {
             ideFrame {
                 waitForProjectOpen(1.minutes)
                 waitForIndicators(3.minutes)
+                // ponytail: "alwaysFail" never ran before in a fresh sandbox, so the redesigned run widget's
+                // quick popup only shows recents/"Current File"/"Edit Configurations…" - go through the dialog instead
                 runConfigurationsPopup {
                     runConfigurationsList {
-                        println("Run configurations popup items: $items")
-                        // ponytail: substring match, exact match failed against the popup's actual cell text on 2025.3 builds
-                        clickRun("alwaysFail", false)
+                        clickItem("Edit Configurations…")
                     }
+                }
+                editRunConfigurationsDialog {
+                    x(xQuery { byVisibleText("alwaysFail") }).click()
+                    runButton.click()
                 }
 
                 lateinit var failureWindow: UiComponent
