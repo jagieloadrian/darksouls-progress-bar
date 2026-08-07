@@ -5,7 +5,6 @@ import com.github.jagieloadrian.darksoulsprogressbar.settings.DSSettingsListener
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.BACKGROUND_PROGRESS_BAR_GIF
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.ui.scale.JBUIScale
-import kotlinx.datetime.Clock.System.now
 import java.awt.BasicStroke
 import java.awt.Dimension
 import java.awt.Graphics
@@ -24,7 +23,7 @@ class DSProgressBarUI : BasicProgressBarUI() {
     private var iconsToUse = DSPersistentState.getInstance().iconPaths
     private val chosenGif: ImageIcon = loadIconSafely(iconsToUse.random())
     private val cycleDurationMs = 5000 //in milliseconds
-    private val startTime = now().toEpochMilliseconds()
+    private val startTime = System.currentTimeMillis()
 
     init {
         ApplicationManager.getApplication()
@@ -140,7 +139,7 @@ class DSProgressBarUI : BasicProgressBarUI() {
     }
 
     private fun calculateXOffset(availableWidth: Int): Int {
-        val elapsed = (now().toEpochMilliseconds() - startTime) % cycleDurationMs
+        val elapsed = (System.currentTimeMillis() - startTime) % cycleDurationMs
         val progress = elapsed.toDouble() / cycleDurationMs
 
       return (availableWidth * abs(sin(progress * Math.PI))).toInt()

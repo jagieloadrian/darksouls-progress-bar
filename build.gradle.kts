@@ -18,6 +18,12 @@ version = providers.gradleProperty("pluginVersion").get()
 // Set the JVM language level used to build the project.
 kotlin {
     jvmToolchain(21)
+    compilerOptions {
+        // ponytail: without this, kotlinc bakes a copy of every Java default method
+        // (incl. deprecated StatusBarWidget#getPresentation(PlatformType)) into each
+        // implementing class, which trips the plugin verifier's deprecated-API check.
+        freeCompilerArgs.add("-Xjvm-default=all")
+    }
 }
 
 // Configure project's dependencies
