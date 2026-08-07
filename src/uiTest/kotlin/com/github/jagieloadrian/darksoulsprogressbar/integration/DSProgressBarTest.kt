@@ -120,11 +120,18 @@ class DSProgressBarTest {
                 }
                 editRunConfigurationsDialog {
                     // ponytail: fresh sandbox has no persisted tree UI state, so the config type
-                    // nodes render collapsed and "alwaysFail" isn't in the accessible tree yet.
-                    // Default expandAll() timeout (5s) is too tight while CI's 2-core runner is
-                    // also churning through a cold nested Gradle sync at the same time.
-                    tree().expandAll(30.seconds)
-                    x(xQuery { byVisibleText("alwaysFail") }).click()
+                    // nodes render collapsed and RunManager itself may still be registering
+                    // "alwaysFail" from disk while CI's 2-core runner is also churning through a
+                    // cold nested Gradle sync. A single expandAll+find isn't reliably enough time
+                    // under that contention - retry both until they succeed, like the failure
+                    // window wait below already does.
+                    lateinit var alwaysFail: UiComponent
+                    waitFor(timeout = 3.minutes) {
+                        tree().expandAll(30.seconds)
+                        alwaysFail = x(xQuery { byVisibleText("alwaysFail") })
+                        alwaysFail.present()
+                    }
+                    alwaysFail.click()
                     runButton.click()
                 }
 
