@@ -110,7 +110,9 @@ class DSProgressBarTest {
                 waitForIndicators(3.minutes)
                 runConfigurationsPopup {
                     runConfigurationsList {
-                        clickRun("alwaysFail", true)
+                        println("Run configurations popup items: $items")
+                        // ponytail: substring match, exact match failed against the popup's actual cell text on 2025.3 builds
+                        clickRun("alwaysFail", false)
                     }
                 }
 
