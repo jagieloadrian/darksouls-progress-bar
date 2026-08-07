@@ -180,6 +180,15 @@ jobs:
           name: ui-tests-result
           path: ${{ github.workspace }}/build/reports/tests
 
+      # Collect driver failure screenshots (path reported in the DriverWithContextError log line)
+      - name: Collect UI Tests Screenshots
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-tests-screenshots
+          path: ${{ github.workspace }}/out/ide-tests/**/screenshots/**
+          if-no-files-found: ignore
+
   # Run Qodana inspections and provide a report
   inspectCode:
     name: Inspect code
