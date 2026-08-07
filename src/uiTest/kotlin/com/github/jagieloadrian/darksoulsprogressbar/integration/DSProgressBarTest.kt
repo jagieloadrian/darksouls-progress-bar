@@ -111,20 +111,12 @@ class DSProgressBarTest {
             ideFrame {
                 waitForProjectOpen(1.minutes)
                 waitForIndicators(3.minutes)
-                // ponytail: "alwaysFail" never ran before in a fresh sandbox, so the redesigned run widget's
-                // quick popup only shows recents/"Current File"/"Edit Configurations…" - go through the dialog instead
                 runConfigurationsPopup {
                     runConfigurationsList {
                         clickItem("Edit Configurations…")
                     }
                 }
                 editRunConfigurationsDialog {
-                    // ponytail: fresh sandbox has no persisted tree UI state, so the config type
-                    // nodes render collapsed and RunManager itself may still be registering
-                    // "alwaysFail" from disk while CI's 2-core runner is also churning through a
-                    // cold nested Gradle sync. A single expandAll+find isn't reliably enough time
-                    // under that contention - retry both until they succeed, like the failure
-                    // window wait below already does.
                     lateinit var alwaysFail: UiComponent
                     waitFor(timeout = 3.minutes) {
                         tree().expandAll(30.seconds)

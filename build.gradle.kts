@@ -221,7 +221,6 @@ tasks {
             includeTags("ui")
         }
 
-        // ponytail: print full exception (not just class name) straight to CI log, HTML report is a pain to fetch from Actions
         testLogging {
             events("failed")
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL

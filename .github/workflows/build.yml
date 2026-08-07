@@ -152,10 +152,6 @@ jobs:
           java-version: 21
 
       # Setup Gradle
-      # ponytail: writable cache here (unlike the other jobs) - uiTest also runs a nested Gradle
-      # build for the embedded WebSocketEcho fixture project when the IDE imports it, and that
-      # build's deps never get cached anywhere else. Read-only left them re-downloaded cold every
-      # run, which is what was blowing waitForIndicators budgets on the 2-core CI runner.
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5.0.0
 
