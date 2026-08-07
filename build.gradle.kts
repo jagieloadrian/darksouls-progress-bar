@@ -212,6 +212,7 @@ tasks {
             "ide.show.tips.on.startup.default.value" to false,
             "jb.consents.confirmation.enabled" to false
         )
+        maxHeapSize = "2g"
     }
 
     test {
@@ -235,23 +236,16 @@ tasks {
         minHeapSize = "1g"
         maxHeapSize = "4g"
 
-        systemProperty("path.to.build.plugin", buildPlugin.get().archiveFile.get().asFile.absolutePath)
-        systemProperty("idea.home.path", prepareTestSandbox.get().getDestinationDir().parentFile.absolutePath)
-        systemProperty(
-            "allure.results.directory", project.layout.buildDirectory.get().asFile.absolutePath + "/allure-results"
+        systemProperties(
+            "path.to.build.plugin" to buildPlugin.get().archiveFile.get().asFile.absolutePath,
+            "idea.home.path" to prepareTestSandbox.get().getDestinationDir().parentFile.absolutePath,
+            "allure.results.directory" to project.layout.buildDirectory.get().asFile.absolutePath + "/allure-results",
+            "uiPlatformBuildVersion" to providers.gradleProperty("uiPlatformBuildVersion").get(),
+            // Disable IntelliJ test listener that conflicts with standard JUnit
+            "idea.test.cyclic.buffer.size" to "0"
         )
-        systemProperty("uiPlatformBuildVersion", providers.gradleProperty("uiPlatformBuildVersion").get())
 
-        // Disable IntelliJ test listener that conflicts with standard JUnit
-        systemProperty("idea.test.cyclic.buffer.size", "0")
-
-        // Add required JVM arguments
-        jvmArgumentProviders += CommandLineArgumentProvider {
-            mutableListOf(
-                "--add-opens=java.base/java.lang=ALL-UNNAMED",
-                "--add-opens=java.desktop/javax.swing=ALL-UNNAMED"
-            )
-        }
+        jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED", "--add-opens=java.desktop/javax.swing=ALL-UNNAMED")
 
         dependsOn(buildPlugin)
     }

@@ -1,6 +1,6 @@
 [versions]
 # libraries
-assertj = "3.27.6"
+assertj = "3.27.7"
 coroutines = "1.10.2"
 junit = "6.0.1"
 junit4 = "4.13.2"

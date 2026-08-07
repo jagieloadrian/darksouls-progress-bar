@@ -25,7 +25,7 @@ interface TestFailureWindowApi{
 }
 
 object TestFailureWindowUI : TestFailureWindowApi{
-    private var shouldShow = DSPersistentState.getInstance().animateOnFailedBuild
+    private var shouldShow: Boolean? = null
     private var popup: JBPopup? = null
     private var clip: Clip? = null
 
@@ -43,9 +43,10 @@ object TestFailureWindowUI : TestFailureWindowApi{
     }
 
     override fun show() {
-        if (!shouldShow) {
-            return
+        if (shouldShow == null) {
+            shouldShow = DSPersistentState.getInstance().animateOnFailedBuild
         }
+        if (shouldShow != true) return
         if (popup != null) return
 
         val gifUrl = javaClass.getResource(Items.YOU_DIED_GIF)
