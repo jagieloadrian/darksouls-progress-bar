@@ -8,6 +8,7 @@ import com.intellij.driver.sdk.ui.components.common.dialogs.editRunConfiguration
 import com.intellij.driver.sdk.ui.components.common.ideFrame
 import com.intellij.driver.sdk.ui.components.common.popups.runConfigurationsList
 import com.intellij.driver.sdk.ui.components.common.popups.runConfigurationsPopup
+import com.intellij.driver.sdk.ui.components.elements.tree
 import com.intellij.driver.sdk.ui.xQuery
 import com.intellij.driver.sdk.waitFor
 import com.intellij.driver.sdk.waitForProjectOpen
@@ -117,6 +118,9 @@ class DSProgressBarTest {
                     }
                 }
                 editRunConfigurationsDialog {
+                    // ponytail: fresh sandbox has no persisted tree UI state, so the config type
+                    // nodes render collapsed and "alwaysFail" isn't in the accessible tree yet
+                    tree().expandAll()
                     x(xQuery { byVisibleText("alwaysFail") }).click()
                     runButton.click()
                 }
