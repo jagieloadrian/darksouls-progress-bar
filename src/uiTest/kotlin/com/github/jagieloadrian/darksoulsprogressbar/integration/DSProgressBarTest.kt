@@ -2,9 +2,11 @@ package com.github.jagieloadrian.darksoulsprogressbar.integration
 
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Items
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.CUSTOM_WIDGET_NAME
-import com.intellij.driver.sdk.invokeAction
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.TEST_FAILURE_WINDOW_NAME
 import com.intellij.driver.sdk.ui.components.UiComponent
 import com.intellij.driver.sdk.ui.components.common.ideFrame
+import com.intellij.driver.sdk.ui.components.common.popups.runConfigurationsList
+import com.intellij.driver.sdk.ui.components.common.popups.runConfigurationsPopup
 import com.intellij.driver.sdk.ui.xQuery
 import com.intellij.driver.sdk.waitFor
 import com.intellij.driver.sdk.waitForProjectOpen
@@ -32,7 +34,6 @@ import javax.swing.JLabel
 import javax.swing.JProgressBar
 import kotlin.io.path.Path
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 @Tag("ui")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
@@ -50,8 +51,8 @@ class DSProgressBarTest {
             )
             run = Starter.newContext(
                 "Test Context",
-                TestCase(IdeProductProvider.IC, projectInfo = project)
-                    .withVersion("2025.2")
+                TestCase(IdeProductProvider.IU, projectInfo = project)
+                    .withVersion("2025.3")
             ).applyIf(true) {
                 val pluginPath = System.getProperty("path.to.build.plugin")
                 PluginConfigurator(this).installPluginFromPath(Paths.get(pluginPath))
@@ -106,20 +107,16 @@ class DSProgressBarTest {
         run.driver.withContext {
             ideFrame {
                 waitForProjectOpen(1.minutes)
-                invokeAction("RunAnything")
-                waitFor(timeout = 30.seconds) {
-                    val searchField = x(xQuery { byClass("SearchField") })
-                    searchField.present() && searchField.component.isShowing()
-                }
-
-                keyboard {
-                    typeText("gradle clean build")
-                    enter()
+                waitForIndicators(3.minutes)
+                runConfigurationsPopup {
+                    runConfigurationsList {
+                        clickRun("alwaysFail", true)
+                    }
                 }
 
                 lateinit var failureWindow: UiComponent
-                waitFor(timeout = 2.minutes) {
-                    failureWindow = x(xQuery { byAccessibleName("TestFailureWindow") })
+                waitFor(timeout = 1.minutes) {
+                    failureWindow = x(xQuery { byAccessibleName(TEST_FAILURE_WINDOW_NAME) })
                     failureWindow.present()
                 }
 

@@ -1,13 +1,14 @@
 package com.github.jagieloadrian.darksoulsprogressbar.integration
 
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.DS_PLUGIN_CONFIGURABLE_NAME
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.SETTINGS_NAME
+import com.intellij.driver.sdk.ui.Finder
 import com.intellij.driver.sdk.ui.UiText.Companion.asString
 import com.intellij.driver.sdk.ui.components.UiComponent
-import com.intellij.driver.sdk.ui.components.common.IdeaFrameUI
 import com.intellij.driver.sdk.ui.components.common.ideFrame
 import com.intellij.driver.sdk.ui.components.elements.checkBox
+import com.intellij.driver.sdk.ui.components.settings.settingsDialog
 import com.intellij.driver.sdk.ui.xQuery
-import com.intellij.driver.sdk.waitFor
 import com.intellij.driver.sdk.waitForProjectOpen
 import com.intellij.ide.starter.driver.engine.BackgroundRun
 import com.intellij.ide.starter.driver.engine.runIdeWithDriver
@@ -16,7 +17,6 @@ import com.intellij.ide.starter.models.TestCase
 import com.intellij.ide.starter.plugins.PluginConfigurator
 import com.intellij.ide.starter.project.LocalProjectInfo
 import com.intellij.ide.starter.runner.Starter
-import com.intellij.platform.ide.progress.ModalTaskOwner.project
 import com.intellij.util.applyIf
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test
 import java.nio.file.Paths
 import kotlin.io.path.Path
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 @Tag("ui")
 class DSPluginSettingUITest {
@@ -46,8 +45,8 @@ class DSPluginSettingUITest {
             )
             run = Starter.newContext(
                 "Test Context",
-                TestCase(IdeProductProvider.IC, projectInfo = project)
-                    .withVersion("2025.2")
+                TestCase(IdeProductProvider.IU, projectInfo = project)
+                    .withVersion("2025.3")
             ).applyIf(true) {
                 val pluginPath = System.getProperty("path.to.build.plugin")
                 PluginConfigurator(this).installPluginFromPath(Paths.get(pluginPath))
@@ -67,63 +66,57 @@ class DSPluginSettingUITest {
         run.driver.withContext {
             ideFrame {
                 waitForProjectOpen(1.minutes)
-                openSettingsAndChooseMyPluginLeftTab()
-                //checking name on top of custom settings
-                val breadcrumbs = x(xQuery { byVisibleText(SETTINGS_NAME) })
-                breadcrumbs.getAllTexts().asString() shouldContain SETTINGS_NAME
-                // Get info about options (list of checkboxes, all should be enabled
-                val options = getOptions()
-                val allOptions = options.size
-                val enabledOptions = options
-                    .map { it.checkBox() }
-                    .count { it.isSelected() }
-                allOptions shouldBe enabledOptions
-                // switch off 3 randomly, selected should be less than all options
-                val switchedOffOptions = options
-                    .shuffled()
-                    .take(3)
-                switchedOffOptions
-                    .forEach { it.click() }
-                val enabledOptionsAfterClick = options
-                    .map { it.checkBox() }
-                    .count { it.isSelected() }
-                enabledOptionsAfterClick shouldNotBe allOptions
-                //applied and ok custom settings
-                x(xQuery { byText("Apply") }).click()
-                x(xQuery { byText("OK") }).click()
+                waitForIndicators(3.minutes)
+
+                openSettingsDialog()
+                lateinit var switchedOffOptions: List<UiComponent>
+                settingsDialog {
+                    openTreeSettingsSection(SETTINGS_NAME)
+                    //checking name on top of custom settings
+                    val breadcrumbs = x(xQuery { byVisibleText(SETTINGS_NAME) })
+                    breadcrumbs.getAllTexts().asString() shouldContain SETTINGS_NAME
+                    // Get info about options (list of checkboxes, all should be enabled
+                    val options = getOptions()
+                    val allOptions = options.size
+                    val enabledOptions = options
+                        .map { it.checkBox() }
+                        .count { it.isSelected() }
+                    allOptions shouldBe enabledOptions
+                    // switch off 3 randomly, selected should be less than all options
+                    switchedOffOptions = options
+                        .shuffled()
+                        .take(3)
+                    switchedOffOptions
+                        .forEach { it.click() }
+                    val enabledOptionsAfterClick = options
+                        .map { it.checkBox() }
+                        .count { it.isSelected() }
+                    enabledOptionsAfterClick shouldNotBe allOptions
+                    //applied and ok custom settings
+                    applyButton.click()
+                    okButton.click()
+                }
+
                 //open again settings and check if the same options are disabled
-                openSettingsAndChooseMyPluginLeftTab()
-                val newOptions = getOptions()
-                val disabledOptions = newOptions
-                    .map { it.checkBox() }
-                    .filter { !it.isSelected() }
-                    .map { it.getParent() }
-                    .map { it.getAllTexts().asString() }
-                disabledOptions shouldContainExactlyInAnyOrder switchedOffOptions.map {
-                    it.getParent().getAllTexts().asString()
+                openSettingsDialog()
+                settingsDialog {
+                    openTreeSettingsSection(SETTINGS_NAME)
+                    val newOptions = getOptions()
+                    val disabledOptions = newOptions
+                        .map { it.checkBox() }
+                        .filter { !it.isSelected() }
+                        .map { it.getParent() }
+                        .map { it.getAllTexts().asString() }
+                    disabledOptions shouldContainExactlyInAnyOrder switchedOffOptions.map {
+                        it.getParent().getAllTexts().asString()
+                    }
                 }
             }
         }
     }
 
-    private fun IdeaFrameUI.openSettingsAndChooseMyPluginLeftTab() {
-        //Open settings
-        openSettingsDialog()
-        lateinit var settingItem: UiComponent
-        waitFor(timeout = 30.seconds) {
-            settingItem = x(xQuery { byClass("MyTree") })
-            settingItem.present()
-                    && settingItem.component.isShowing()
-                    && settingItem.getAllTexts().asString().contains(SETTINGS_NAME)
-        }
-        //click DarkSouls tab on left list
-        settingItem.getAllTexts().first {
-            it.text.contains(SETTINGS_NAME)
-        }.click()
-    }
-
-    private fun IdeaFrameUI.getOptions(): List<UiComponent> {
-        val optionsContainer = x(xQuery { byAccessibleName("DSPluginConfigurable") })
+    private fun Finder.getOptions(): List<UiComponent> {
+        val optionsContainer = x(xQuery { byAccessibleName(DS_PLUGIN_CONFIGURABLE_NAME) })
         return optionsContainer.getAllVerticallyOrderedUiText()
             .flatten()
             .map {

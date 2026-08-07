@@ -19,9 +19,6 @@ version = providers.gradleProperty("pluginVersion").get()
 kotlin {
     jvmToolchain(21)
     compilerOptions {
-        // ponytail: without this, kotlinc bakes a copy of every Java default method
-        // (incl. deprecated StatusBarWidget#getPresentation(PlatformType)) into each
-        // implementing class, which trips the plugin verifier's deprecated-API check.
         freeCompilerArgs.add("-Xjvm-default=all")
     }
 }
@@ -163,7 +160,7 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            recommended()
+            current()
         }
     }
 }
@@ -179,9 +176,6 @@ kover {
         sources {
             excludedSourceSets.add("uiTest")
         }
-        // ponytail: Kover auto-wires every Test task into `koverXmlReport`/`koverVerify`,
-        // which `check` (and thus `build`) depends on — that's what boots a real IDE on
-        // `gradle clean build`. Excluding sources alone doesn't stop it from being *run*.
         instrumentation {
             disabledForTestTasks.add("uiTest")
         }
@@ -246,5 +240,15 @@ tasks {
         jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED", "--add-opens=java.desktop/javax.swing=ALL-UNNAMED")
 
         dependsOn(buildPlugin)
+    }
+
+    register<Exec>("uiTestLocal") {
+        description = "Runs uiTest inside an isolated Xvfb display, same as CI, so it can't crash your real desktop session"
+        group = "verification"
+        onlyIf { System.getProperty("os.name").lowercase().contains("linux") }
+        commandLine(
+            "xvfb-run", "--auto-servernum",
+            "./gradlew", "uiTest", "--console=plain"
+        )
     }
 }

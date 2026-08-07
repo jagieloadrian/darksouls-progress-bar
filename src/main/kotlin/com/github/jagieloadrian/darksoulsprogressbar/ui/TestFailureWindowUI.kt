@@ -3,6 +3,7 @@ package com.github.jagieloadrian.darksoulsprogressbar.ui
 import com.github.jagieloadrian.darksoulsprogressbar.settings.DSPersistentState
 import com.github.jagieloadrian.darksoulsprogressbar.settings.DSSettingsListener
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Items
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Names
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
@@ -57,7 +58,7 @@ object TestFailureWindowUI : TestFailureWindowApi{
         val panel = JPanel().apply {
             preferredSize = Dimension(icon.iconWidth, icon.iconHeight)
             val label = JLabel(icon).apply {
-                accessibleContext.accessibleName = javaClass.simpleName
+                accessibleContext.accessibleName = Names.TEST_FAILURE_WINDOW_NAME
                 addMouseListener(object : MouseAdapter() {
                     override fun mouseClicked(e: MouseEvent?) {
                         TestFailureWindowUI.hide()
