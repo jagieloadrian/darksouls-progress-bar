@@ -66,7 +66,10 @@ class DSPluginSettingUITest {
         run.driver.withContext {
             ideFrame {
                 waitForProjectOpen(1.minutes)
-                waitForIndicators(3.minutes)
+                // ponytail: this is the only test class that opens the WebSocketEcho fixture
+                // project cold - a from-scratch Gradle sync of its deps measurably exceeds 3
+                // minutes on a weak/cold runner, confirmed by reproducing a fully-cold local run
+                waitForIndicators(8.minutes)
 
                 openSettingsDialog()
                 lateinit var switchedOffOptions: List<UiComponent>
