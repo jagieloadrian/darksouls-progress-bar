@@ -22,7 +22,9 @@ class ConfigLoadingTest {
 
     @Test
     fun `names yaml loads all constants`() {
-        Names.SETTINGS_NAME shouldBe "DarkSouls progress bar"
+        Names.SETTINGS_NAME shouldBe "DarkSouls Progress Bar"
         Names.DS_PERSISTENT_TOPIC_NAME shouldBe "DSPersistentStateChanged"
+        Names.TEST_FAILURE_WINDOW_NAME shouldBe "TestFailureWindow"
+        Names.DS_PLUGIN_CONFIGURABLE_NAME shouldBe "DSPluginConfigurable"
     }
 }

@@ -3,6 +3,7 @@ package com.github.jagieloadrian.darksoulsprogressbar.ui
 import com.github.jagieloadrian.darksoulsprogressbar.settings.DSPersistentState
 import com.github.jagieloadrian.darksoulsprogressbar.settings.DSSettingsListener
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Items
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Names
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
@@ -25,7 +26,7 @@ interface TestFailureWindowApi{
 }
 
 object TestFailureWindowUI : TestFailureWindowApi{
-    private var shouldShow = DSPersistentState.getInstance().animateOnFailedBuild
+    private var shouldShow: Boolean? = null
     private var popup: JBPopup? = null
     private var clip: Clip? = null
 
@@ -43,9 +44,10 @@ object TestFailureWindowUI : TestFailureWindowApi{
     }
 
     override fun show() {
-        if (!shouldShow) {
-            return
+        if (shouldShow == null) {
+            shouldShow = DSPersistentState.getInstance().animateOnFailedBuild
         }
+        if (shouldShow != true) return
         if (popup != null) return
 
         val gifUrl = javaClass.getResource(Items.YOU_DIED_GIF)
@@ -56,7 +58,7 @@ object TestFailureWindowUI : TestFailureWindowApi{
         val panel = JPanel().apply {
             preferredSize = Dimension(icon.iconWidth, icon.iconHeight)
             val label = JLabel(icon).apply {
-                accessibleContext.accessibleName = getJavaClassName()
+                accessibleContext.accessibleName = Names.TEST_FAILURE_WINDOW_NAME
                 addMouseListener(object : MouseAdapter() {
                     override fun mouseClicked(e: MouseEvent?) {
                         TestFailureWindowUI.hide()
@@ -114,9 +116,5 @@ object TestFailureWindowUI : TestFailureWindowApi{
         }
         popup = null
         clip = null
-    }
-
-    private fun getJavaClassName():String {
-        return this.javaClass.simpleName
     }
 }

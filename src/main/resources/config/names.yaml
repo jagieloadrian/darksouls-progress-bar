@@ -1,4 +1,6 @@
 customWidgetName: get some rest
-settingsName: DarkSouls progress bar
+settingsName: DarkSouls Progress Bar
 dsPersistentTopicName: DSPersistentStateChanged
 testFailureWindowDesc: Play animation on failed build
+testFailureWindowName: TestFailureWindow
+dsPluginConfigurableName: DSPluginConfigurable
