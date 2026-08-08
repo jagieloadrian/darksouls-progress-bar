@@ -1,5 +1,3 @@
-package project.WebSocketEcho
-
 val ktor_version = "2.3.12"
 
 plugins {
@@ -26,6 +24,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(17)
 }

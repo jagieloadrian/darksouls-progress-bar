@@ -17,7 +17,10 @@ version = providers.gradleProperty("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
+    compilerOptions {
+        freeCompilerArgs.add("-Xjvm-default=all")
+    }
 }
 
 // Configure project's dependencies
@@ -66,9 +69,9 @@ dependencies {
     testImplementation(libs.mocking.mockito)
     testImplementation(libs.opentest4j)
     testImplementation(libs.kotest.assertion)
+    testRuntimeOnly(libs.junit4)
 
     uiTestImplementation(libs.kotest.assertion)
-    uiTestImplementation(libs.kodein)
     uiTestImplementation(libs.coroutines)
     uiTestImplementation(libs.junit.jupiter.core)
     uiTestRuntimeOnly(libs.junit.platform.launcher)
@@ -90,7 +93,6 @@ dependencies {
         // Module Dependencies. Uses `platformBundledModules` property from the gradle.properties file for bundled IntelliJ Platform modules.
         bundledModules(providers.gradleProperty("platformBundledModules").map { it.split(',') })
 
-        testFramework(TestFrameworkType.Starter)
         // UI Test framework dependencies
         testFramework(
             TestFrameworkType.Starter,
@@ -158,19 +160,26 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            recommended()
+            current()
         }
     }
 }
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
 changelog {
-    groups.empty()
     repositoryUrl = providers.gradleProperty("pluginRepositoryUrl")
 }
 
 // Configure Gradle Kover Plugin - read more: https://github.com/Kotlin/kotlinx-kover#configuration
 kover {
+    currentProject {
+        sources {
+            excludedSourceSets.add("uiTest")
+        }
+        instrumentation {
+            disabledForTestTasks.add("uiTest")
+        }
+    }
     reports {
         total {
             xml {
@@ -195,6 +204,7 @@ tasks {
             "ide.show.tips.on.startup.default.value" to false,
             "jb.consents.confirmation.enabled" to false
         )
+        maxHeapSize = "2g"
     }
 
     test {
@@ -211,6 +221,13 @@ tasks {
             includeTags("ui")
         }
 
+        testLogging {
+            events("failed")
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+            showCauses = true
+            showStackTraces = true
+        }
+
         // UI tests should run sequentially (not in parallel) to avoid conflicts
         maxParallelForks = 1
 
@@ -218,24 +235,27 @@ tasks {
         minHeapSize = "1g"
         maxHeapSize = "4g"
 
-        systemProperty("path.to.build.plugin", buildPlugin.get().archiveFile.get().asFile.absolutePath)
-        systemProperty("idea.home.path", prepareTestSandbox.get().getDestinationDir().parentFile.absolutePath)
-        systemProperty(
-            "allure.results.directory", project.layout.buildDirectory.get().asFile.absolutePath + "/allure-results"
+        systemProperties(
+            "path.to.build.plugin" to buildPlugin.get().archiveFile.get().asFile.absolutePath,
+            "idea.home.path" to prepareTestSandbox.get().getDestinationDir().parentFile.absolutePath,
+            "allure.results.directory" to project.layout.buildDirectory.get().asFile.absolutePath + "/allure-results",
+            "uiPlatformBuildVersion" to providers.gradleProperty("uiPlatformBuildVersion").get(),
+            // Disable IntelliJ test listener that conflicts with standard JUnit
+            "idea.test.cyclic.buffer.size" to "0"
         )
-        systemProperty("uiPlatformBuildVersion", providers.gradleProperty("uiPlatformBuildVersion").get())
 
-        // Disable IntelliJ test listener that conflicts with standard JUnit
-        systemProperty("idea.test.cyclic.buffer.size", "0")
-
-        // Add required JVM arguments
-        jvmArgumentProviders += CommandLineArgumentProvider {
-            mutableListOf(
-                "--add-opens=java.base/java.lang=ALL-UNNAMED",
-                "--add-opens=java.desktop/javax.swing=ALL-UNNAMED"
-            )
-        }
+        jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED", "--add-opens=java.desktop/javax.swing=ALL-UNNAMED")
 
         dependsOn(buildPlugin)
+    }
+
+    register<Exec>("uiTestLocal") {
+        description = "Runs uiTest inside an isolated Xvfb display, same as CI, so it can't crash your real desktop session"
+        group = "verification"
+        onlyIf { System.getProperty("os.name").lowercase().contains("linux") }
+        commandLine(
+            "xvfb-run", "--auto-servernum",
+            "./gradlew", "uiTest", "--console=plain"
+        )
     }
 }
