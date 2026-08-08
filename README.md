@@ -1,8 +1,8 @@
 # darksouls-progress-bar
 
 ![Build](https://github.com/jagieloadrian/darksouls-progress-bar/workflows/Build/badge.svg)
-[![Version](https://img.shields.io/jetbrains/plugin/v/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/28960)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/28960)
+[![Version](https://img.shields.io/jetbrains/plugin/v/28960.svg)](https://plugins.jetbrains.com/plugin/28960)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/28960.svg)](https://plugins.jetbrains.com/plugin/28960)
 
 
 <!-- Plugin description -->
@@ -23,9 +23,9 @@ I do not own the Dark Souls or Elden Ring trademark nor do I intend any copyrigh
   
 - Using JetBrains Marketplace:
 
-  Go to [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID) and install it by clicking the <kbd>Install to ...</kbd> button in case your IDE is running.
+  Go to [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/28960) and install it by clicking the <kbd>Install to ...</kbd> button in case your IDE is running.
 
-  You can also download the [latest release](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID/versions) from JetBrains Marketplace and install it manually using
+  You can also download the [latest release](https://plugins.jetbrains.com/plugin/28960/versions) from JetBrains Marketplace and install it manually using
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
 - Manually:

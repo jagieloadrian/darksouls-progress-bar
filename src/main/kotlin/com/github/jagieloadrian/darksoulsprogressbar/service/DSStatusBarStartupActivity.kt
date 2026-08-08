@@ -40,11 +40,12 @@ class DSSpinnerStatusBarFactory : StatusBarWidgetFactory {
     override fun isAvailable(project: Project): Boolean = true
 }
 
-class FireSpinnerWidget(private val spinner: FireSpinner = FireSpinner()) : StatusBarWidget.Multiframe, StatusBarWidget.IconPresentation {
+class FireSpinnerWidget : StatusBarWidget.Multiframe, StatusBarWidget.IconPresentation {
     private val soundtracks = listOf(
         DS_ONE_SOUNDTRACK, DS_TWO_SOUNDTRACK,
         DS_THREE_SOUNDTRACK, ELDEN_RING_SOUNDTRACK
     )
+    private val fireSpinner: ImageIcon = ImageIcon(javaClass.getResource(SMALL_BONFIRE_GIF))
 
     override fun ID(): @NonNls String {
         return CUSTOM_WIDGET_NAME
@@ -59,7 +60,7 @@ class FireSpinnerWidget(private val spinner: FireSpinner = FireSpinner()) : Stat
     }
 
     override fun getIcon(): Icon {
-        return spinner.getIcon()
+        return fireSpinner
     }
 
     override fun getTooltipText(): @NlsContexts.Tooltip String {
@@ -77,13 +78,5 @@ class FireSpinnerWidget(private val spinner: FireSpinner = FireSpinner()) : Stat
                 e.printStackTrace()
             }
         }
-    }
-}
-
-class FireSpinner {
-    private val fireSpinner: ImageIcon = ImageIcon(javaClass.getResource(SMALL_BONFIRE_GIF))
-
-    fun getIcon(): ImageIcon {
-        return fireSpinner
     }
 }

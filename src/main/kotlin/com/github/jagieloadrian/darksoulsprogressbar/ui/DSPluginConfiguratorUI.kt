@@ -3,6 +3,7 @@ package com.github.jagieloadrian.darksoulsprogressbar.ui
 import com.github.jagieloadrian.darksoulsprogressbar.model.Icons
 import com.github.jagieloadrian.darksoulsprogressbar.settings.ConfigPanelResult
 import com.github.jagieloadrian.darksoulsprogressbar.settings.DSPersistentState
+import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.DS_PLUGIN_CONFIGURABLE_NAME
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.TEST_FAILURE_WINDOW_DESC
 import com.intellij.ui.components.JBScrollPane
 import java.awt.BorderLayout
@@ -64,7 +65,7 @@ object DSPluginConfiguratorUI : DSPluginConfiguratorApi {
 
         panel.add(scroll, BorderLayout.CENTER)
         panel.add(animationCheckBox, BorderLayout.SOUTH)
-        panel.accessibleContext.accessibleName = "DSPluginConfigPanel"
+        panel.accessibleContext.accessibleName = DS_PLUGIN_CONFIGURABLE_NAME
 
         return ConfigPanelResult(panel, animationCheckBox)
     }
