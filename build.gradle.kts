@@ -57,6 +57,8 @@ val uiTestRuntimeOnly: Configuration by configurations.getting {
 
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
+    implementation(libs.snakeyaml)
+
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.assertj)
     testImplementation(libs.junit.mockito)
