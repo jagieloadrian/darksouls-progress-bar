@@ -2,6 +2,7 @@ package com.github.jagieloadrian.darksoulsprogressbar.settings
 
 import com.github.jagieloadrian.darksoulsprogressbar.model.Icons
 import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
@@ -38,15 +39,30 @@ class DSPersistentStateTest {
     fun `loadState should copy values from another state`() {
         val original = DSPersistentState().apply {
             iconPaths.clear()
-            iconPaths.add("customPath")
+            iconPaths.add(Icons.entries.first().path)
             animateOnFailedBuild = false
         }
 
         val target = DSPersistentState()
         target.loadState(original)
 
-        target.iconPaths shouldContain "customPath"
+        target.iconPaths shouldContain Icons.entries.first().path
         target.animateOnFailedBuild shouldBe false
+    }
+
+    @Test
+    fun `loadState should drop removed icons and select newly added ones`() {
+        val first = Icons.entries.first().path
+        val saved = DSPersistentState().apply {
+            iconPaths = mutableSetOf(first, "/gif/removed.gif")
+            knownIconPaths = mutableSetOf(first, "/gif/removed.gif")
+        }
+
+        val target = DSPersistentState()
+        target.loadState(saved)
+
+        target.iconPaths shouldNotContain "/gif/removed.gif"
+        target.iconPaths shouldContain Icons.entries.last().path
     }
 
 }

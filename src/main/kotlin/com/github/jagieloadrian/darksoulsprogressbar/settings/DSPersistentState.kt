@@ -16,6 +16,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 class DSPersistentState : PersistentStateComponent<DSPersistentState> {
 
     var iconPaths: MutableSet<String> = Icons.entries.map { it.path }.toMutableSet()
+    var knownIconPaths: MutableSet<String> = iconPaths.toMutableSet()
     var animateOnFailedBuild: Boolean = true
 
     override fun getState(): DSPersistentState {
@@ -24,6 +25,10 @@ class DSPersistentState : PersistentStateComponent<DSPersistentState> {
 
     override fun loadState(state: DSPersistentState) {
         XmlSerializerUtil.copyBean(state, this)
+        val all = Icons.entries.map { it.path }.toSet()
+        // drop icons removed from the plugin, auto-select icons added since last save
+        iconPaths = (iconPaths.filter { it in all } + (all - knownIconPaths)).toMutableSet()
+        knownIconPaths = all.toMutableSet()
     }
 
     companion object {

@@ -5,6 +5,7 @@ import com.github.jagieloadrian.darksoulsprogressbar.settings.DSSettingsListener
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Items
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.JBPopupListener
@@ -107,7 +108,7 @@ object TestFailureWindowUI : TestFailureWindowApi{
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            thisLogger().warn("Cannot play death sound", e)
             // no sound to wait for: close on a timer so the popup doesn't linger
             Timer(FALLBACK_CLOSE_MS) { hide() }.apply { isRepeats = false }.start()
         }
