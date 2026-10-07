@@ -50,8 +50,9 @@ object TestFailureWindowUI : TestFailureWindowApi{
         if (shouldShow != true) return
         if (popup != null) return
 
-        val gifUrl = javaClass.getResource(Items.YOU_DIED_GIF)
-        val soundUrl = javaClass.getResource(Items.YOU_DIED_SOUND)
+        val death = Items.DEATHS.random()
+        val gifUrl = javaClass.getResource(death.gif)
+        val soundUrl = javaClass.getResource(death.sound)
 
         val icon = ImageIcon(gifUrl)
 

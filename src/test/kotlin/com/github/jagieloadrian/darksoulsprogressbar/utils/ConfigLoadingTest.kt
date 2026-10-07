@@ -9,7 +9,7 @@ class ConfigLoadingTest {
 
     @Test
     fun `icons yaml loads all entries`() {
-        Icons.entries.size shouldBe 16
+        Icons.entries.size shouldBe 22
         Icons.entries.first().iconName shouldBe "Bonfire"
         Icons.entries.first().path shouldBe "/gif/bonfire_darksouls.gif"
     }
@@ -17,6 +17,7 @@ class ConfigLoadingTest {
     @Test
     fun `items yaml loads all constants`() {
         Items.YOU_DIED_GIF shouldBe "/gif/you_died.gif"
+        Items.DEATHS.size shouldBe 2
         Items.ELDEN_RING_SOUNDTRACK shouldNotBe null
     }
 

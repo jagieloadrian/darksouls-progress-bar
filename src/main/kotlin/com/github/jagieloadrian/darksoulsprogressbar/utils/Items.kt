@@ -1,5 +1,7 @@
 package com.github.jagieloadrian.darksoulsprogressbar.utils
 
+data class Death(val gif: String, val sound: String)
+
 @Suppress("UNCHECKED_CAST")
 object Items {
     private val config = loadYamlResource("/config/items.yaml")
@@ -10,6 +12,9 @@ object Items {
     val YOU_DIED_GIF: String = gifs.getValue("youDied")
     val SMALL_BONFIRE_GIF: String = gifs.getValue("smallBonfire")
     val BACKGROUND_PROGRESS_BAR_GIF: String = gifs.getValue("backgroundProgressBar")
+
+    val DEATHS: List<Death> = (config["deaths"] as List<Map<String, String>>)
+        .map { Death(it.getValue("gif"), it.getValue("sound")) }
 
     val YOU_DIED_SOUND: String = sound.getValue("youDied")
 
