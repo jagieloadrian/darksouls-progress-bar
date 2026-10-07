@@ -10,7 +10,7 @@ deaths:
   - gif: /gif/you_died.gif
     sound: /sound/you_died.wav
   - gif: /gif/sekiro_dead.gif
-    sound: /sound/sekiro-shadows-die-twice-death.wav
+    sound: /sound/sekiro_shadows_die_twice_death.wav
 
 soundtrack:
   dsOne: https://www.youtube.com/watch?v=iZ0Yp79Odl8&list=PLxh_0CD1_70Or5zVrJS7G5jWehpTzFNH6

@@ -32,14 +32,14 @@ icons:
   - name: Sunbro with sword
     path: /gif/sunbro_again.gif
   - name: Blood Moon
-    path: /gif/blood-moon.gif
+    path: /gif/blood_moon.gif
   - name: Malenia
-    path: /gif/malenia-elden-ring.gif
+    path: /gif/malenia_elden_ring.gif
   - name: Manjar
     path: /gif/manjar.gif
   - name: Praise the Sun
-    path: /gif/praise-the-sun-dark-souls.gif
+    path: /gif/praise_the_sun_dark_souls.gif
   - name: Radahn
-    path: /gif/radahn-elden-ring.gif
+    path: /gif/radahn_elden_ring.gif
   - name: Solaire
     path: /gif/solaire.gif
