@@ -21,21 +21,24 @@ class DSProgressBarUI : BasicProgressBarUI() {
 
     private val background: ImageIcon = ImageIcon(javaClass.getResource(BACKGROUND_PROGRESS_BAR_GIF))
     private var iconsToUse = DSPersistentState.getInstance().iconPaths
-    private val chosenGif: ImageIcon = loadIconSafely(iconsToUse.random())
+    private var chosenGif: ImageIcon = pickIcon()
     private val cycleDurationMs = 5000 //in milliseconds
     private val startTime = System.currentTimeMillis()
 
-    init {
-        ApplicationManager.getApplication()
-            .messageBus
-            .connect()
-            .subscribe(
-                DSSettingsListener.TOPIC,
-                object : DSSettingsListener {
-                    override fun settingsChanged(newState: DSPersistentState) {
-                        iconsToUse = newState.iconPaths
-                    }
-                })
+    private val connection = ApplicationManager.getApplication().messageBus.connect().apply {
+        subscribe(
+            DSSettingsListener.TOPIC,
+            object : DSSettingsListener {
+                override fun settingsChanged(newState: DSPersistentState) {
+                    iconsToUse = newState.iconPaths
+                    chosenGif = pickIcon()
+                }
+            })
+    }
+
+    override fun uninstallUI(c: JComponent?) {
+        connection.disconnect()
+        super.uninstallUI(c)
     }
 
     override fun paintIndeterminate(g2d: Graphics?, c: JComponent?) {
@@ -43,7 +46,7 @@ class DSProgressBarUI : BasicProgressBarUI() {
             c.accessibleContext?.accessibleName = this.javaClass.simpleName
             val gifXPosition = calculateXOffset(c.width)
             paintProgressBar(g2d, c, background, chosenGif, gifXPosition)
-            c.repaint(17)
+            if (c.isShowing) c.repaint(33)
         }
     }
 
@@ -125,8 +128,9 @@ class DSProgressBarUI : BasicProgressBarUI() {
         )
     }
 
-    private fun loadIconSafely(path: String): ImageIcon {
-        val url = javaClass.getResource(path)
+    // empty selection or missing resource -> transparent 1x1 icon
+    private fun pickIcon(): ImageIcon {
+        val url = iconsToUse.randomOrNull()?.let { javaClass.getResource(it) }
         return if (url != null) ImageIcon(url) else ImageIcon(BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB))
     }
 
