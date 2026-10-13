@@ -21,19 +21,12 @@ import javax.swing.plaf.basic.BasicProgressBarUI
 import kotlin.math.abs
 import kotlin.math.sin
 
-/**
- * Progress bar following the IntelliJ progress bar guidelines:
- * - determinate: the background image is revealed up to the current value, the icon rides the leading edge,
- * - indeterminate: the whole bar is filled with the image and the icon sweeps across,
- * - status ([ProgressBarUtil.STATUS_KEY]): failed / warning / passed tint the filled part,
- * - honours `ProgressBar.flip` and the theme track colour.
- */
 class DSProgressBarUI : BasicProgressBarUI() {
 
     private val background: ImageIcon = ImageIcon(javaClass.getResource(BACKGROUND_PROGRESS_BAR_GIF))
     private var iconsToUse = DSPersistentState.getInstance().iconPaths
     private var chosenGif: ImageIcon = pickIcon()
-    private val cycleDurationMs = 5000 //in milliseconds
+    private val cycleDurationMs = 5000
     private val startTime = System.currentTimeMillis()
 
     private val connection = ApplicationManager.getApplication().messageBus.connect().apply {
@@ -90,7 +83,6 @@ class DSProgressBarUI : BasicProgressBarUI() {
 
             val fill = g2.create(fillX, 0, fillW, h) as Graphics2D
             try {
-                // anchor tiles to the bar, not to the fill, so the image does not slide while progressing
                 fill.translate(-fillX, 0)
                 tileBackground(fill, c, w, h)
                 statusTint()?.let {
@@ -114,7 +106,6 @@ class DSProgressBarUI : BasicProgressBarUI() {
         drawBorder(shape, g as Graphics2D)
     }
 
-    /** Fills the bar with the background image at bar height, repeated horizontally (no stretching). */
     private fun tileBackground(g2: Graphics2D, c: JComponent, w: Int, h: Int) {
         val tileW = maxOf(1, (background.iconWidth * h / background.iconHeight.toDouble()).toInt())
         var x = 0
@@ -150,7 +141,6 @@ class DSProgressBarUI : BasicProgressBarUI() {
         )
     }
 
-    // empty selection or missing resource -> transparent 1x1 icon
     private fun pickIcon(): ImageIcon {
         val url = iconsToUse.randomOrNull()?.let { javaClass.getResource(it) }
         return if (url != null) ImageIcon(url) else ImageIcon(BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB))

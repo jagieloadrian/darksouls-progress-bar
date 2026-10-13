@@ -109,7 +109,6 @@ object TestFailureWindowUI : TestFailureWindowApi{
             }
         } catch (e: Exception) {
             thisLogger().warn("Cannot play death sound", e)
-            // no sound to wait for: close on a timer so the popup doesn't linger
             Timer(FALLBACK_CLOSE_MS) { hide() }.apply { isRepeats = false }.start()
         }
     }

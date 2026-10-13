@@ -26,7 +26,6 @@ class DSPersistentState : PersistentStateComponent<DSPersistentState> {
     override fun loadState(state: DSPersistentState) {
         XmlSerializerUtil.copyBean(state, this)
         val all = Icons.entries.map { it.path }.toSet()
-        // drop icons removed from the plugin, auto-select icons added since last save
         iconPaths = (iconPaths.filter { it in all } + (all - knownIconPaths)).toMutableSet()
         knownIconPaths = all.toMutableSet()
     }
