@@ -6,6 +6,7 @@ import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.DS_TWO_SOUNDTRA
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.ELDEN_RING_SOUNDTRACK
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Items.SMALL_BONFIRE_GIF
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names.CUSTOM_WIDGET_NAME
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsContexts
 import com.intellij.openapi.wm.StatusBarWidget
@@ -32,7 +33,6 @@ class DSSpinnerStatusBarFactory : StatusBarWidgetFactory {
 
     override fun disposeWidget(widget: StatusBarWidget) {
         super.disposeWidget(widget)
-        widget.dispose()
     }
 
     override fun isEnabledByDefault(): Boolean = true
@@ -75,7 +75,7 @@ class FireSpinnerWidget : StatusBarWidget.Multiframe, StatusBarWidget.IconPresen
                     Desktop.getDesktop().browse(url)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                thisLogger().warn("Cannot open soundtrack link", e)
             }
         }
     }

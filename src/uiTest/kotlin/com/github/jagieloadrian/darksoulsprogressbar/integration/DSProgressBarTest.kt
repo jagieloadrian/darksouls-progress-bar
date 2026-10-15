@@ -138,7 +138,7 @@ class DSProgressBarTest {
                 failureWindow.isEnabled() shouldBe true
                 val failureWindowComponent = failureWindow.component
 
-                failureWindowComponent.toStr() shouldContain Items.YOU_DIED_GIF
+                Items.DEATHS.any { failureWindowComponent.toStr().contains(it.gif) } shouldBe true
                 failureWindowComponent.isShowing() shouldBe true
                 failureWindowComponent.getClass().toString() shouldContain JLabel::class.java.toString()
             }

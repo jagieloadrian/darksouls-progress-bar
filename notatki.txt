@@ -1,2 +1,0 @@
-1. pomyśleć czy nie potrzebaw wiecej unit testów
-2. skonfigurować release deploy

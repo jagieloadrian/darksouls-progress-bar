@@ -5,6 +5,7 @@ import com.github.jagieloadrian.darksoulsprogressbar.settings.DSSettingsListener
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Items
 import com.github.jagieloadrian.darksoulsprogressbar.utils.Names
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.JBPopupListener
@@ -20,6 +21,7 @@ import javax.swing.ImageIcon
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
+import javax.swing.Timer
 
 interface TestFailureWindowApi{
     fun show()
@@ -33,7 +35,7 @@ object TestFailureWindowUI : TestFailureWindowApi{
     init {
         ApplicationManager.getApplication()
             .messageBus
-            .connect()
+            .connect(ApplicationManager.getApplication())
             .subscribe(
                 DSSettingsListener.TOPIC,
                 object : DSSettingsListener {
@@ -50,8 +52,9 @@ object TestFailureWindowUI : TestFailureWindowApi{
         if (shouldShow != true) return
         if (popup != null) return
 
-        val gifUrl = javaClass.getResource(Items.YOU_DIED_GIF)
-        val soundUrl = javaClass.getResource(Items.YOU_DIED_SOUND)
+        val death = Items.DEATHS.random()
+        val gifUrl = javaClass.getResource(death.gif) ?: return
+        val soundUrl = javaClass.getResource(death.sound)
 
         val icon = ImageIcon(gifUrl)
 
@@ -92,6 +95,7 @@ object TestFailureWindowUI : TestFailureWindowApi{
 
     private fun playSoundAndClose(soundUrl: URL?) {
         try {
+            requireNotNull(soundUrl) { "Missing death sound" }
             val audio = AudioSystem.getAudioInputStream(soundUrl)
             clip = AudioSystem.getClip()
             clip?.open(audio)
@@ -104,9 +108,12 @@ object TestFailureWindowUI : TestFailureWindowApi{
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            thisLogger().warn("Cannot play death sound", e)
+            Timer(FALLBACK_CLOSE_MS) { hide() }.apply { isRepeats = false }.start()
         }
     }
+
+    private const val FALLBACK_CLOSE_MS = 3000
 
     private fun hide() {
         popup?.cancel()
