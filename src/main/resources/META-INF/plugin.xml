@@ -21,5 +21,7 @@
                   topic="com.intellij.ide.ui.LafManagerListener"/>
         <listener class="com.github.jagieloadrian.darksoulsprogressbar.listeners.DSProgressBarComponent"
                   topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+        <listener class="com.github.jagieloadrian.darksoulsprogressbar.listeners.DSProgressBarComponent"
+                  topic="com.intellij.ide.AppLifecycleListener"/>
     </applicationListeners>
 </idea-plugin>

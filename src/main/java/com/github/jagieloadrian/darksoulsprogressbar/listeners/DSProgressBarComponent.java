@@ -1,6 +1,7 @@
 package com.github.jagieloadrian.darksoulsprogressbar.listeners;
 
 import com.github.jagieloadrian.darksoulsprogressbar.ui.DSProgressBarFactory;
+import com.intellij.ide.AppLifecycleListener;
 import com.intellij.ide.ui.LafManager;
 import com.intellij.ide.ui.LafManagerListener;
 import com.intellij.openapi.application.ApplicationActivationListener;
@@ -9,12 +10,17 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.UIManager;
 
-public class DSProgressBarComponent implements LafManagerListener, ApplicationActivationListener {
+public class DSProgressBarComponent implements LafManagerListener, ApplicationActivationListener, AppLifecycleListener {
     private static final String PROGRESS_BAR_UI_KEY = "ProgressBarUI";
     private static final String DS_PROGRESS_BAR_UI_IMPLEMENTATION_NAME = DSProgressBarFactory.class.getName();
 
     @Override
     public void lookAndFeelChanged(@NotNull LafManager lafManager) {
+        updateProgressBarUI();
+    }
+
+    @Override
+    public void appFrameCreated(@NotNull java.util.List<String> commandLineArgs) {
         updateProgressBarUI();
     }
 
