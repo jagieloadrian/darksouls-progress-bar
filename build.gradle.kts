@@ -169,6 +169,7 @@ intellijPlatform {
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
 changelog {
     repositoryUrl = providers.gradleProperty("pluginRepositoryUrl")
+    versionPrefix = ""
 }
 
 // Configure Gradle Kover Plugin - read more: https://github.com/Kotlin/kotlinx-kover#configuration
